@@ -3,6 +3,13 @@ SM_PATH=/home/piu/stepmania
 PIUIO_PATH=/hom/piu/piuio
 WEB_PATH=/var/www/html
 #usage display
+log()
+{
+	if [ $VERBOSE = 1 ]; then
+		echo "$@"
+	fi
+}
+
 usage()
 {
 cat << EOF
@@ -65,17 +72,18 @@ spinner()
 			printf "\b\b\b\b\b\b"
 		fi
 	done
-	if [ $VERBOSE = 1]; then 
-		printf "    \b\b\b\b"
-	fi
+	log "    \b\b\b\b"
 }
 
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
 build_sm ()
 {
 	cd $SM_PATH
+	log "Updating Repository"
 	git pull > /dev/null
+	log "Cleaning Stepmania Repo"
 	make clean > /dev/null 2>&1
+	log "Making Stepmania!"
 	make > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
@@ -104,14 +112,14 @@ check_sm ()
 	REMOTE=$(git rev-parse @{u})
 	BASE=$(git merge-base @ @{u})
 	if [ $LOCAL = $REMOTE ]; then
-		echo "stepmania build is current."
+		log "stepmania build is current."
 	elif [ $LOCAL = $BASE ]; then
-		echo "Buidling stepmania"
+		log "Buidling stepmania"
 		BUILD_SM=1
 	elif [ $REMOTE = $BASE ]; then
-		echo "local repo manually updated."
+		log "local repo manually updated."
 	else
-		echo "Diverged"
+		log "Diverged"
 	fi
 }
 
