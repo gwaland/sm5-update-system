@@ -2,27 +2,79 @@
 SM_PATH=/home/piu/stepmania
 PIUIO_PATH=/hom/piu/piuio
 WEB_PATH=/var/www/html
+#usage display
+usage()
+{
+cat << EOF
+usage: $0 options
+
+This script will check for updates in stepmania, piuio, and the piu-dex-gw skins and build packages if they exist..
+
+OPTIONS:
+   -h      Show this message
+   -s      Force a build of stepmania 
+   -p      Force a build for piuio
+   -g      Force a build on the piu-nex-gw
+   -v      Verbose
+EOF
+}
+
+#parse options. 
+BUILD_SM=0
+BUILD_PIUIO=0
+BUILD_GW=0
+VERBOSE=0
+while getopts .hspgv. OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         s)
+             BUILD_SM=1
+             ;;
+         p)
+             BUILD_PIUIO=1 
+             ;;
+         g)
+             BUILD_GW=1
+             ;;
+         v)
+             VERBOSE=1
+             ;;
+         ?)
+             usage
+             exit
+             ;;
+     esac
+done
+
 #spinner class (probably needs to be taken out or a -q -v option added to enable it. 
 spinner()
 {
-    local pid=$1
-    local delay=0.75
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
+	local pid=$1
+	local delay=0.75
+	local spinstr='|/-\'
+	while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+		if [ $VERBOSE = 1 ]; then
+			local temp=${spinstr#?}
+			printf " [%c]  " "$spinstr"
+			local spinstr=$temp${spinstr%"$temp"}
+			sleep $delay
+			printf "\b\b\b\b\b\b"
+		fi
+	done
+	if [ $VERBOSE = 1]; then 
+		printf "    \b\b\b\b"
+	fi
 }
 
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
 build_sm ()
 {
 	cd $SM_PATH
-	git pull
+	git pull > /dev/null
 	make clean > /dev/null 2>&1
 	make > make.out 2>&1 &
 	spinner $!
@@ -37,7 +89,6 @@ build_sm ()
 bundle_sm ()
 {
 	_NOW=$(date +%Y%m%d%k%M)
-echo $_NOW
 	cd $SM_PATH
 	tar -czf $WEB_PATH/stepmania-build-$_NOW.tar.gz ./Announcers/ ./BackgroundEffects/ ./BackgroundTransitions/ ./BGAnimations/ ./bundle/ ./Characters/ ./Courses/ ./Data/ ./Docs/ ./icons/ ./Manual/ ./NoteSkins/ ./Program/ ./Scripts/ ./Themes/ ./stepmania ./GtkModule.so
 	ln -sf $WEB_PATH/stepmania-build-$_NOW.tar.gz $WEB_PATH/stepmania-build-current.tar.gz
@@ -54,19 +105,22 @@ check_sm ()
 	BASE=$(git merge-base @ @{u})
 	if [ $LOCAL = $REMOTE ]; then
 		echo "stepmania build is current."
-		build_sm
-		exit 0
 	elif [ $LOCAL = $BASE ]; then
 		echo "Buidling stepmania"
-		build_sm
-		exit 0
+		BUILD_SM=1
 	elif [ $REMOTE = $BASE ]; then
 		echo "local repo manually updated."
-		exit 1
 	else
 		echo "Diverged"
-		exit 1
 	fi
 }
 
+#main functions. 
 check_sm
+
+#Check to see if we're building stepmania
+if [ $BUILD_SM = 1 ]; then
+	build_sm
+fi
+exit 1
+
