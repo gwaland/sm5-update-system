@@ -1,6 +1,7 @@
 #!/bin/bash
 SM_PATH=/home/piu/stepmania
-PIUIO_PATH=/hom/piu/piuio
+PIUIO_PATH=/home/piu/piuio
+PIU_DELTA_PATH=/home/piu/PIU-Delta-GW
 WEB_PATH=/var/www/html
 #usage display
 log()
@@ -23,6 +24,7 @@ OPTIONS:
    -p      Force a build for piuio
    -g      Force a build on the piu-nex-gw
    -v      Verbose
+   -c      Check only (implies -v)
 EOF
 }
 
@@ -31,30 +33,35 @@ BUILD_SM=0
 BUILD_PIUIO=0
 BUILD_GW=0
 VERBOSE=0
-while getopts .hspgv. OPTION
+CHECK_ONLY=0
+while getopts .hspgvc. OPTION
 do
-     case $OPTION in
-         h)
-             usage
-             exit 1
-             ;;
-         s)
-             BUILD_SM=1
-             ;;
-         p)
-             BUILD_PIUIO=1 
-             ;;
-         g)
-             BUILD_GW=1
-             ;;
-         v)
-             VERBOSE=1
-             ;;
-         ?)
-             usage
-             exit
-             ;;
-     esac
+	case $OPTION in
+		h)
+			usage
+			exit 1
+			;;
+		s)
+			BUILD_SM=1
+			;;
+		p)
+			BUILD_PIUIO=1 
+			;;
+		g)
+			BUILD_GW=1
+			;;
+		v)
+			VERBOSE=1
+			;;
+		c)
+			VERBOSE=1
+			CHECK_ONLY=1
+			;;
+		?)
+			usage
+			exit
+			;;
+	esac
 done
 
 #spinner class (probably needs to be taken out or a -q -v option added to enable it. 
@@ -72,7 +79,7 @@ spinner()
 			printf "\b\b\b\b\b\b"
 		fi
 	done
-	log "    \b\b\b\b"
+	printf "    \b\b\b\b"
 }
 
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
@@ -103,7 +110,18 @@ bundle_sm ()
 	md5sum $WEB_PATH/stepmania-build-$_NOW.tar.gz > $WEB_PATH/stepmania-build-$_NOW.md5sum
 	ln -sf $WEB_PATH/stepmania-build-$_NOW.md5sum $WEB_PATH/stepmania-build-current.md5sum
 }
+bundle_piu_theme ()
+{
+        _NOW=$(date +%Y%m%d%k%M)
+        cd $PIU_DELTA_PATH 
+	tar -cazf $WEB_PATH/piu-delta-theme-$NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
 
+        ln -sf $WEB_PATH/piu-delta-theme-$NOW.tar.gz $WEB_PATH/piu-delta-theme-current.tar.gz
+        md5sum $WEB_PATH/piu-delta-theme-$NOW.tar.gz > $WEB_PATH/piu-delta-theme-$NOW.md5sum
+        ln -sf $WEB_PATH/piu-delta-theme-$NOW.md5sum $WEB_PATH//piu-delta-theme-current.md5sum
+
+
+}
 #check stepmania to see if it needs to be updated. 
 check_sm ()
 {
@@ -123,12 +141,58 @@ check_sm ()
 	fi
 }
 
+check_piuio ()
+{
+        cd $PIUIO_PATH
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u})
+        BASE=$(git merge-base @ @{u})
+        if [ $LOCAL = $REMOTE ]; then
+                log "piuio build is current."
+        elif [ $LOCAL = $BASE ]; then
+                log "Buidling piuio bundle"
+                BUILD_PIUIO=1
+        elif [ $REMOTE = $BASE ]; then
+                log "Local piuio repo manually updated."
+        else
+                log "Local piuio repo diverged"
+        fi
+}
+
+check_theme ()
+{
+        cd $PIU_DELTA_PATH
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u})
+        BASE=$(git merge-base @ @{u})
+        if [ $LOCAL = $REMOTE ]; then
+                log "piu delta theme is current."
+        elif [ $LOCAL = $BASE ]; then
+                log "Buidling piu delta theme bundle"
+                BUILD_PIUIO=1
+        elif [ $REMOTE = $BASE ]; then
+                log "Local piu delta theme repo manually updated."
+        else
+                log "Local piu delta theme repo diverged"
+        fi
+
+}
 #main functions. 
 check_sm
+check_piuio
+check_theme
 
 #Check to see if we're building stepmania
-if [ $BUILD_SM = 1 ]; then
-	build_sm
+if [ $CHECK_ONLY = 0 ]; then
+	if [ $BUILD_SM = 1 ]; then
+		build_sm
+	fi
+	if [ $BUILD_GW ]; then
+		bundle_piu_theme
+	fi
+        if [ $BUILD_PIUIO ]; then
+                bundle_piuio
+        fi
 fi
 exit 1
 
