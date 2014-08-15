@@ -41,17 +41,20 @@ do
 			usage
 			exit 1
 			;;
+		v)
+                       VERBOSE=1
+                        ;;
 		s)
+			log 'Forcing update of stepmania package'
 			BUILD_SM=1
 			;;
 		p)
+			log 'Forcing update of piuio package'
 			BUILD_PIUIO=1 
 			;;
 		g)
+			log 'Forcing update of theme package'
 			BUILD_GW=1
-			;;
-		v)
-			VERBOSE=1
 			;;
 		c)
 			VERBOSE=1
@@ -122,6 +125,12 @@ bundle_piu_theme ()
 
 
 }
+
+bundle_piuio ()
+{
+   log 'place holder'
+}
+
 #check stepmania to see if it needs to be updated. 
 check_sm ()
 {
@@ -177,11 +186,47 @@ check_theme ()
         fi
 
 }
-#main functions. 
-check_sm
-check_piuio
-check_theme
 
+check_git ()
+{
+	local GIT_CHECK=0
+	cd $1
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u})
+        BASE=$(git merge-base @ @{u})
+        if [ $LOCAL = $REMOTE ]; then
+                log "$2 is current."
+        elif [ $LOCAL = $BASE ]; then
+                log "building $2 bundle"
+                GIT_CHECK=1
+        elif [ $REMOTE = $BASE ]; then
+                log "Local $2 repo manually updated."
+        else
+                log "Local $2 repo diverged"
+        fi
+	exit $GIT_CHECK
+
+}
+
+#main functions. 
+#check_sm
+#check_piuio
+#check_theme
+if [ $BUILD_PIUIO = 0 ]; then
+	STATUS=$(check_git $PIUIO_PATH 'piuio')
+	BUILD_PIUIO=$?
+	log $STATUS
+fi
+if [ $BUILD_SM = 0 ]; then
+	STATUS=$(check_git $SM_PATH 'stepmania')
+	BUILD_SM=$?
+	log $STATUS
+fi
+if [ $BUILD_GW = 0 ]; then
+	STATUS=$(check_git $PIU_DELTA_PATH 'piu delta theme') 
+	BUILD_GW=$?
+	log $STATUS
+fi
 #Check to see if we're building stepmania
 if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
