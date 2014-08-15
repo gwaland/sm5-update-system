@@ -45,15 +45,12 @@ do
                        VERBOSE=1
                         ;;
 		s)
-			log 'Forcing update of stepmania package'
 			BUILD_SM=1
 			;;
 		p)
-			log 'Forcing update of piuio package'
 			BUILD_PIUIO=1 
 			;;
 		g)
-			log 'Forcing update of theme package'
 			BUILD_GW=1
 			;;
 		c)
@@ -106,87 +103,37 @@ build_sm ()
 #build the release package and md5sum and update -current symlinks
 bundle_sm ()
 {
-	_NOW=$(date +%Y%m%d%k%M)
+	_NOW=$(date +%Y%m%d%H%M)
 	cd $SM_PATH
+	log "Creating stepmania tar bundle."
 	tar -czf $WEB_PATH/stepmania-build-$_NOW.tar.gz ./Announcers/ ./BackgroundEffects/ ./BackgroundTransitions/ ./BGAnimations/ ./bundle/ ./Characters/ ./Courses/ ./Data/ ./Docs/ ./icons/ ./Manual/ ./NoteSkins/ ./Program/ ./Scripts/ ./Themes/ ./stepmania ./GtkModule.so
 	ln -sf $WEB_PATH/stepmania-build-$_NOW.tar.gz $WEB_PATH/stepmania-build-current.tar.gz
+	log "Creating stepmania md5sum"
 	md5sum $WEB_PATH/stepmania-build-$_NOW.tar.gz > $WEB_PATH/stepmania-build-$_NOW.md5sum
 	ln -sf $WEB_PATH/stepmania-build-$_NOW.md5sum $WEB_PATH/stepmania-build-current.md5sum
 }
 bundle_piu_theme ()
 {
-        _NOW=$(date +%Y%m%d%k%M)
+        _NOW=$(date +%Y%m%d%H%M)
         cd $PIU_DELTA_PATH 
-	tar -cazf $WEB_PATH/piu-delta-theme-$NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
-
-        ln -sf $WEB_PATH/piu-delta-theme-$NOW.tar.gz $WEB_PATH/piu-delta-theme-current.tar.gz
-        md5sum $WEB_PATH/piu-delta-theme-$NOW.tar.gz > $WEB_PATH/piu-delta-theme-$NOW.md5sum
-        ln -sf $WEB_PATH/piu-delta-theme-$NOW.md5sum $WEB_PATH//piu-delta-theme-current.md5sum
+	log "Creating piu theme bundle"
+	tar -cazf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
+        ln -sf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz $WEB_PATH/piu-delta-theme-current.tar.gz
+        log "Creating piu theme md5sum"
+        md5sum $WEB_PATH/piu-delta-theme-$_NOW.tar.gz > $WEB_PATH/piu-delta-theme-$_NOW.md5sum
+        ln -sf $WEB_PATH/piu-delta-theme-$_NOW.md5sum $WEB_PATH/piu-delta-theme-current.md5sum
 
 
 }
 
 bundle_piuio ()
 {
-   log 'place holder'
+	cd $PIUIO_PATH
+	log 'Creating PIUIO bundle'
+#still working on this. 
 }
 
 #check stepmania to see if it needs to be updated. 
-check_sm ()
-{
-	cd $SM_PATH
-	LOCAL=$(git rev-parse @)
-	REMOTE=$(git rev-parse @{u})
-	BASE=$(git merge-base @ @{u})
-	if [ $LOCAL = $REMOTE ]; then
-		log "stepmania build is current."
-	elif [ $LOCAL = $BASE ]; then
-		log "Buidling stepmania"
-		BUILD_SM=1
-	elif [ $REMOTE = $BASE ]; then
-		log "local repo manually updated."
-	else
-		log "Diverged"
-	fi
-}
-
-check_piuio ()
-{
-        cd $PIUIO_PATH
-        LOCAL=$(git rev-parse @)
-        REMOTE=$(git rev-parse @{u})
-        BASE=$(git merge-base @ @{u})
-        if [ $LOCAL = $REMOTE ]; then
-                log "piuio build is current."
-        elif [ $LOCAL = $BASE ]; then
-                log "Buidling piuio bundle"
-                BUILD_PIUIO=1
-        elif [ $REMOTE = $BASE ]; then
-                log "Local piuio repo manually updated."
-        else
-                log "Local piuio repo diverged"
-        fi
-}
-
-check_theme ()
-{
-        cd $PIU_DELTA_PATH
-        LOCAL=$(git rev-parse @)
-        REMOTE=$(git rev-parse @{u})
-        BASE=$(git merge-base @ @{u})
-        if [ $LOCAL = $REMOTE ]; then
-                log "piu delta theme is current."
-        elif [ $LOCAL = $BASE ]; then
-                log "Buidling piu delta theme bundle"
-                BUILD_PIUIO=1
-        elif [ $REMOTE = $BASE ]; then
-                log "Local piu delta theme repo manually updated."
-        else
-                log "Local piu delta theme repo diverged"
-        fi
-
-}
-
 check_git ()
 {
 	local GIT_CHECK=0
@@ -216,26 +163,32 @@ if [ $BUILD_PIUIO = 0 ]; then
 	STATUS=$(check_git $PIUIO_PATH 'piuio')
 	BUILD_PIUIO=$?
 	log $STATUS
+else
+	log 'Forcing update of piuio package'
 fi
 if [ $BUILD_SM = 0 ]; then
 	STATUS=$(check_git $SM_PATH 'stepmania')
 	BUILD_SM=$?
 	log $STATUS
+else
+	log 'Forcing update of stepmania package'
 fi
 if [ $BUILD_GW = 0 ]; then
 	STATUS=$(check_git $PIU_DELTA_PATH 'piu delta theme') 
 	BUILD_GW=$?
 	log $STATUS
+else
+	log 'Forcing update of theme package'
 fi
 #Check to see if we're building stepmania
 if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
 		build_sm
 	fi
-	if [ $BUILD_GW ]; then
+	if [ $BUILD_GW = 1 ]; then
 		bundle_piu_theme
 	fi
-        if [ $BUILD_PIUIO ]; then
+        if [ $BUILD_PIUIO = 1 ]; then
                 bundle_piuio
         fi
 fi
