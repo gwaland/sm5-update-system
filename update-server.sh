@@ -180,7 +180,7 @@ if [ $BUILD_GW = 0 ]; then
 else
 	log 'Forcing update of theme package'
 fi
-#Check to see if we're building stepmania
+#Check to see if we are building stepmania
 if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
 		build_sm
