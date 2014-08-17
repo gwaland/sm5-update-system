@@ -1,6 +1,13 @@
-#!/bin/bash
+#/bin/bash
 #rsync -avrc -e ssh piu-server:~/Songs/* /home/piu/Songs/
 #cp -rsf /home/piu/Songs/ /home/piu/sm5/
+_SERVER=piu-server.home.priv
+_REMOTE_SONG_PATH='/home/piu/Songs/'
+_REMOTE_THEME_PATH=/var/www/html/*current*
+_REMOTE_SM_PATH=/var/www/html/*current*
+_LOCAL_UPDATE_PATH=/home/piu/new/
+_LOCAL_SONG_PATH=/home/piu/Songs/
+_LOCAL_SM_PATH=/home/piu/sm5/
 
 progress()
 {
@@ -13,15 +20,18 @@ progress()
 		sleep 3
         done
 }
-#update songs from server. 
-rsync -Lazr --info=progress2 -e ssh piu-server:~/Songs/* /home/piu/Songs/ > /tmp/prog  &
-progress $! |  whiptail --title "Song Updates" --gauge "Downloading new songs" 7 70 0
+#updateclient <server path> <local path> '<description>'
+updateclient ()
+{
+rsync -Lazr --info=progress2 -e ssh $_SERVER:$1 $2 > /tmp/prog  &
+progress $! |  whiptail --title "$3 Updates" --gauge "Downloading new $3" 7 70 0
+}
+#update Songs. 
+updateclient $_REMOTE_SONG_PATH $_LOCAL_SONG_PATH 'Songs'
 cp -rsf /home/piu/Songs /home/piu/sm5/
 
 #update stepmania from server.
-rsync -Lazr --info=progress2 -e ssh piu-server:/var/www/html/*-current* /home/piu/new > /tmp/prog &
-progress $! | whiptail --title "Stepmania update" --gauge "Downloading Stepmania Updates" 7 70 0
-
+updateclient $_REMOTE_SM_PATH $_LOCAL_UPDATE_PATH 'Stepmania Software'
 
 cmp -s /home/piu/new/stepmania-build-current.md5sum /home/piu/installed/stepmania-build-current.md5sum 
 if [ $? -eq 0 ]; then
@@ -42,4 +52,5 @@ else
 	rsync -avr --exclude-from /home/piu/sm5/theme.exclude /home/piu/sm5.backup/Themes/ /home/piu/sm5/Themes/
 
 fi
+
 
