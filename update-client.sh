@@ -23,7 +23,7 @@ progress()
 #updateclient <server path> <local path> '<description>'
 updateclient ()
 {
-rsync -Lazr --info=progress2 -e ssh $_SERVER:$1 $2 > /tmp/prog  &
+rsync -Lazr --delete --info=progress2 -e ssh $_SERVER:$1 $2 > /tmp/prog  &
 progress $! |  whiptail --title "$3 Updates" --gauge "Downloading new $3" 7 70 0
 }
 #update Songs. 
