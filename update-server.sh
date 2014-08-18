@@ -116,6 +116,7 @@ bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
         cd $PIU_DELTA_PATH 
+	git pull > /dev/null
 	log "Creating piu theme bundle"
 	tar -cazf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
         ln -sf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz $WEB_PATH/piu-delta-theme-current.tar.gz
@@ -138,7 +139,8 @@ check_git ()
 {
 	local GIT_CHECK=0
 	cd $1
-        LOCAL=$(git rev-parse @)
+	git fetch
+        LOCAL=$(git rev-parse HEAD)
         REMOTE=$(git rev-parse @{u})
         BASE=$(git merge-base @ @{u})
         if [ $LOCAL = $REMOTE ]; then
@@ -180,7 +182,7 @@ if [ $BUILD_GW = 0 ]; then
 else
 	log 'Forcing update of theme package'
 fi
-#Check to see if we're building stepmania
+#Check to see if we are building stepmania
 if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
 		build_sm
