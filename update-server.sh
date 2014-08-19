@@ -1,8 +1,11 @@
 #!/bin/bash
 SM_PATH=/home/piu/stepmania
 PIUIO_PATH=/home/piu/piuio
-PIU_DELTA_PATH=/home/piu/PIU-Delta-GW
-WEB_PATH=/var/www/html
+THEME_PATH=/home/piu/Themes/PIU-Delta-GW
+#THEME_PATH=/home/piu/Themes
+SM_REPO_PATH=/home/piu/repo/sm5
+THEME_REPO_PATH=/home/piu/repo/theme
+PIUIO_REPO_PATH=/home/piu/repo/piuio
 #usage display
 log()
 {
@@ -22,7 +25,7 @@ OPTIONS:
    -h      Show this message
    -s      Force a build of stepmania 
    -p      Force a build for piuio
-   -g      Force a build on the piu-nex-gw
+   -t      Force a build on the themese directory
    -v      Verbose
    -c      Check only (implies -v)
 EOF
@@ -31,10 +34,10 @@ EOF
 #parse options. 
 BUILD_SM=0
 BUILD_PIUIO=0
-BUILD_GW=0
+BUILD_THEME=0
 VERBOSE=0
 CHECK_ONLY=0
-while getopts .hspgvc. OPTION
+while getopts .hsptvc. OPTION
 do
 	case $OPTION in
 		h)
@@ -50,8 +53,8 @@ do
 		p)
 			BUILD_PIUIO=1 
 			;;
-		g)
-			BUILD_GW=1
+		t)
+			BUILD_THEME=1
 			;;
 		c)
 			VERBOSE=1
@@ -106,23 +109,23 @@ bundle_sm ()
 	_NOW=$(date +%Y%m%d%H%M)
 	cd $SM_PATH
 	log "Creating stepmania tar bundle."
-	tar -czf $WEB_PATH/stepmania-build-$_NOW.tar.gz ./Announcers/ ./BackgroundEffects/ ./BackgroundTransitions/ ./BGAnimations/ ./bundle/ ./Characters/ ./Courses/ ./Data/ ./Docs/ ./icons/ ./Manual/ ./NoteSkins/ ./Program/ ./Scripts/ ./Themes/ ./stepmania ./GtkModule.so
-	ln -sf $WEB_PATH/stepmania-build-$_NOW.tar.gz $WEB_PATH/stepmania-build-current.tar.gz
+	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz ./Announcers/ ./BackgroundEffects/ ./BackgroundTransitions/ ./BGAnimations/ ./bundle/ ./Characters/ ./Courses/ ./Data/ ./Docs/ ./icons/ ./Manual/ ./NoteSkins/ ./Program/ ./Scripts/ ./Themes/ ./stepmania ./GtkModule.so
+	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
 	log "Creating stepmania md5sum"
-	md5sum $WEB_PATH/stepmania-build-$_NOW.tar.gz > $WEB_PATH/stepmania-build-$_NOW.md5sum
-	ln -sf $WEB_PATH/stepmania-build-$_NOW.md5sum $WEB_PATH/stepmania-build-current.md5sum
+	md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
+	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
 }
 bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
-        cd $PIU_DELTA_PATH 
+        cd $THEME_PATH 
 	git pull > /dev/null
 	log "Creating piu theme bundle"
-	tar -cazf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
-        ln -sf $WEB_PATH/piu-delta-theme-$_NOW.tar.gz $WEB_PATH/piu-delta-theme-current.tar.gz
+	tar -cazf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
+        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-delta-theme-current.tar.gz
         log "Creating piu theme md5sum"
-        md5sum $WEB_PATH/piu-delta-theme-$_NOW.tar.gz > $WEB_PATH/piu-delta-theme-$_NOW.md5sum
-        ln -sf $WEB_PATH/piu-delta-theme-$_NOW.md5sum $WEB_PATH/piu-delta-theme-current.md5sum
+        md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
+        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
 
 
 }
@@ -175,9 +178,9 @@ if [ $BUILD_SM = 0 ]; then
 else
 	log 'Forcing update of stepmania package'
 fi
-if [ $BUILD_GW = 0 ]; then
-	STATUS=$(check_git $PIU_DELTA_PATH 'piu delta theme') 
-	BUILD_GW=$?
+if [ $BUILD_THEME = 0 ]; then
+	STATUS=$(check_git $THEME_PATH 'piu theme') 
+	BUILD_THEME=$?
 	log $STATUS
 else
 	log 'Forcing update of theme package'
@@ -187,7 +190,7 @@ if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
 		build_sm
 	fi
-	if [ $BUILD_GW = 1 ]; then
+	if [ $BUILD_THEME = 1 ]; then
 		bundle_piu_theme
 	fi
         if [ $BUILD_PIUIO = 1 ]; then
