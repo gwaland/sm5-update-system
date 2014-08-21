@@ -1,5 +1,6 @@
 #!/bin/bash
 SM_PATH=/home/piu/stepmania
+SM_INSTALL_PATH=/home/piu/sm5-install
 PIUIO_PATH=/home/piu/piuio
 THEME_PATH=/home/piu/Themes/PIU-Delta-GW
 #THEME_PATH=/home/piu/Themes
@@ -92,13 +93,30 @@ build_sm ()
 	log "Updating Repository"
 	git pull > /dev/null
 	log "Cleaning Stepmania Repo"
-	make clean > /dev/null 2>&1
+	make clean > /dev/null 2>&1 &
+	spinner $!
+	log "Configuring Stepmania"
+	./configure --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
+	spinner $!
+	rm -rf $SM_INSTALL_PATH/stepmania\ 5
 	log "Making Stepmania!"
 	make > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
-		cp src/stepmania ./
-		cp src/GtkModule.so ./
+#		cp src/stepmania ./
+#		cp src/GtkModule.so ./
+		make install
+	        cd $SM_INSTALL_PATH/stepmania\ 5
+        	mkdir -p bundle/ffmpeg/libavformat/
+	        mkdir -p bundle/ffmpeg/libavformat/
+        	mkdir -p bundle/ffmpeg/libavutil/
+	        mkdir -p bundle/ffmpeg/libswscale/
+        	mkdir -p bundle/ffmpeg/libavcodec
+	        cp /home/piu/stepmania/bundle/ffmpeg/libavformat/libavformat.so.55 bundle/ffmpeg/libavformat/
+        	cp /home/piu/stepmania/bundle/ffmpeg/libavutil/libavutil.so.52 bundle/ffmpeg/libavutil/
+	        cp /home/piu/stepmania/bundle/ffmpeg/libswscale/libswscale.so.2 bundle/ffmpeg/libswscale/
+        	cp /home/piu/stepmania/bundle/ffmpeg/libavcodec/libavcodec.so.55 bundle/ffmpeg/libavcodec
+	        touch portable.ini
 		bundle_sm
 	fi
 }
@@ -107,9 +125,10 @@ build_sm ()
 bundle_sm ()
 {
 	_NOW=$(date +%Y%m%d%H%M)
-	cd $SM_PATH
+	cd $SM_INSTALL_PATH/stepmania\ 5
+	touch build-$_NOW
 	log "Creating stepmania tar bundle."
-	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz ./Announcers/ ./BackgroundEffects/ ./BackgroundTransitions/ ./BGAnimations/ ./bundle/ ./Characters/ ./Courses/ ./Data/ ./Docs/ ./icons/ ./Manual/ ./NoteSkins/ ./Program/ ./Scripts/ ./Themes/ ./stepmania ./GtkModule.so
+	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
 	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
 	log "Creating stepmania md5sum"
 	md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
