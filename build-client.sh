@@ -32,3 +32,5 @@ echo 'if [ -z "$DISPLAY" ] && [ $(tty) == /dev/tty1 ]; then' >> ~/.profile
 echo '    startx' >> ~/.profile
 echo 'fi' >> ~/.profile
 
+~/update.sh
+
