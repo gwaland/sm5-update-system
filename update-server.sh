@@ -96,7 +96,7 @@ build_sm ()
 	make clean > /dev/null 2>&1 &
 	spinner $!
 	log "Configuring Stepmania"
-	./configure --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
+	./configure   --with-static-png   --with-static-jpeg --with-static-zlib  --with-static-bzip  --with-static-vorbis --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
 	spinner $!
 	rm -rf $SM_INSTALL_PATH/stepmania\ 5
 	log "Making Stepmania!"
@@ -105,13 +105,14 @@ build_sm ()
 	if [ $? -eq 0 ]; then
 #		cp src/stepmania ./
 #		cp src/GtkModule.so ./
-		make install
+		make install > make.install 2>&1 &
+		spinner $!
 	        cd $SM_INSTALL_PATH/stepmania\ 5
-        	mkdir -p bundle/ffmpeg/libavformat/
-	        mkdir -p bundle/ffmpeg/libavformat/
-        	mkdir -p bundle/ffmpeg/libavutil/
-	        mkdir -p bundle/ffmpeg/libswscale/
-        	mkdir -p bundle/ffmpeg/libavcodec
+        	mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
+	        mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
+        	mkdir -p bundle/ffmpeg/libavutil/ > /dev/null
+	        mkdir -p bundle/ffmpeg/libswscale/ > /dev/null
+        	mkdir -p bundle/ffmpeg/libavcodec/ > /dev/null
 	        cp /home/piu/stepmania/bundle/ffmpeg/libavformat/libavformat.so.55 bundle/ffmpeg/libavformat/
         	cp /home/piu/stepmania/bundle/ffmpeg/libavutil/libavutil.so.52 bundle/ffmpeg/libavutil/
 	        cp /home/piu/stepmania/bundle/ffmpeg/libswscale/libswscale.so.2 bundle/ffmpeg/libswscale/
