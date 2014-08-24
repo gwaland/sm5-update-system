@@ -7,17 +7,17 @@ _GIT_PIUIO="https://github.com/djpohly/piuio.git"
 _PIUIO_BRANCH="legacy"
 
 #generate keys and directories needed.
-ssh-keygen -q -t rsa -N "" -f $_USER/.ssh/id_rsa
-mkdir -p $_USER/sm5-install
-mkdir -p $_USER/repo/piuio
-mkdir -p $_USER/repo/sm5
-mkdir -p $_USER/repo/theme
-mkdir -p $_USER/repo/songs
-mkdir -p $_USER/Themes
+ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
+mkdir -p ~/sm5-install
+mkdir -p ~/repo/piuio
+mkdir -p ~/repo/sm5
+mkdir -p ~/repo/theme
+mkdir -p ~/repo/songs
+mkdir -p ~/Themes
 
 #themes are not automatically pulled
 #Grab stepmania and piuio sources
-cd $_USER
+cd ~
 git clone $_GIT_SM
 git clone $_GIT_PIUIO -b $_PIUIO_BRANCH
 
@@ -30,5 +30,5 @@ sudo apt-get update
 sudo apt-get -y install $_PACKAGES
 
 #Finally force an update on all options
-$_USER/update.sh -vstp
+~/update.sh -vstp
 
