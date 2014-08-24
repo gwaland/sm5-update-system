@@ -96,6 +96,7 @@ build_sm ()
 	make clean > /dev/null 2>&1 &
 	spinner $!
 	log "Configuring Stepmania"
+	./autogen.sh
 	./configure   --with-static-png   --with-static-jpeg --with-static-zlib  --with-static-bzip  --with-static-vorbis --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
 	spinner $!
 	rm -rf $SM_INSTALL_PATH/stepmania\ 5
