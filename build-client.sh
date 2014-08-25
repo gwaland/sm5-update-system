@@ -17,12 +17,12 @@ sudo sed -i s/#GRUB_TERMINAL=console/GRUB_TERMINAL=console/g /etc/default/grub
 sudo sed -i s/#GRUB_GFXMODE=640x480/GRUB_GFXMODE=640x480/g /etc/default/grub
 sudo update-grub
 sudo sed -i s/exit 0//g /etc/rc.local
-sudo  echo 'chmod a+wrx /dev/piuio0' >> /etc/rc.local
-sudo echo 'exit 0' >> /etc/rc.local
+sudo  "echo 'chmod a+wrx /dev/piuio0' >> /etc/rc.local"
+sudo "echo 'exit 0' >> /etc/rc.local"
 sudo apt-get update
 sudo apt-get install $_PACKAGES
 sudo sed -i s/exec/#exec/g /etc/init/tty1.conf
-sudo echo 'exec /bin/login -f piu tty1 </dev/tty1 >/dev/tty1 2>&1' >> /etc/init/tty1.conf
+sudo "echo 'exec /bin/login -f piu tty1 </dev/tty1 >/dev/tty1 2>&1' >> /etc/init/tty1.conf"
 echo 'exec /home/piu/stepmania.sh' > ~/.xinitrc; chmod +x ~/.xinitrc
 echo '#!/bin/bash' > ~/stepmania.sh; echo 'cd ~/sm5' >> ~/stepmania.sh; echo './stepmania' >> ~/stepmania.sh; chmod +x ~/stepmania.sh
 echo 'if (  last | grep -e $(whoami) -e reboot | head -2 | grep -q reboot ); then' >> ~/.profile
