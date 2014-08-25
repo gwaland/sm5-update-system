@@ -24,6 +24,8 @@ sudo apt-get update
 sudo apt-get -y install $_PACKAGES
 sudo sed -i s/exec/#exec/g /etc/init/tty1.conf
 sudo sh -c 'echo "exec /bin/login -f piu tty1 </dev/tty1 >/dev/tty1 2>&1" >> /etc/init/tty1.conf'
+sudo usermod -G audio $_USER
+sudo alsa force-reload
 echo 'exec /home/piu/stepmania.sh' > ~/.xinitrc; chmod +x ~/.xinitrc
 echo '#!/bin/bash' > ~/stepmania.sh; echo 'cd ~/sm5' >> ~/stepmania.sh; echo './stepmania' >> ~/stepmania.sh; chmod +x ~/stepmania.sh
 echo 'if (  last | grep -e $(whoami) -e reboot | head -2 | grep -q reboot ); then' >> ~/.profile
@@ -34,5 +36,3 @@ echo '    startx' >> ~/.profile
 echo 'fi' >> ~/.profile
 
 ~/update.sh
-sudo usermod -G audio $_USER
-sudo alsa force-reload

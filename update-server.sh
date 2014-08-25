@@ -1,13 +1,15 @@
 #!/bin/bash
-SM_PATH=/home/piu/stepmania
-SM_INSTALL_PATH=/home/piu/sm5-install
-PIUIO_PATH=/home/piu/piuio
-THEME_PATH=/home/piu/Themes/PIU-Delta-GW
+
+#SM_PATH=/home/piu/stepmania
+#SM_INSTALL_PATH=/home/piu/sm5-install
+#PIUIO_PATH=/home/piu/piuio
+#THEME_PATH=/home/piu/Themes/PIU-Delta-GW
 #THEME_PATH=/home/piu/Themes
-SM_REPO_PATH=/home/piu/repo/sm5
-THEME_REPO_PATH=/home/piu/repo/theme
-PIUIO_REPO_PATH=/home/piu/repo/piuio
+#SM_REPO_PATH=/home/piu/repo/sm5
+#THEME_REPO_PATH=/home/piu/repo/theme
+#PIUIO_REPO_PATH=/home/piu/repo/piuio
 #usage display
+source ~/.sm5-update.conf
 log()
 {
 	if [ $VERBOSE = 1 ]; then
