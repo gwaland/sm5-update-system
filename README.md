@@ -2,7 +2,7 @@
 
 This is a series of scripts for handling updating stepmania on a server to update a pump it up MK6 system. 
 
-## update.sh&nbsp;
+## update-server.sh&nbsp;
 <div>
 
 *   <span style="line-height: 19.5px;">Server side script</span>
@@ -13,7 +13,7 @@ This is a series of scripts for handling updating stepmania on a server to updat
 *   <span style="line-height: 19.5px;">md5sum is provided to verify current installed version on PIU machine.</span><div>
 </div></div>
 
-## check-server.sh
+## update-client.sh
 <div>
 
 *   <span style="line-height: 19.5px;">script on client to check for updates. &nbsp;Will grab current md5sum file and compare it to installed md5sum file.&nbsp;</span>
@@ -21,3 +21,11 @@ This is a series of scripts for handling updating stepmania on a server to updat
 *   <span style="line-height: 19.5px;">If installation fails, this script will enable a backup copy to start.&nbsp;</span>
 *   <span style="line-height: 19.5px;">rsync will be run on the Songs directory on the server to grab any new songs or updates from the server.</span><div>
 </div></div>
+
+## build-client.sh
+<div>
+
+* Builds the infrastructure for the client.  Requires minimal ubuntu install with git, and ssh installed. 
+* be sure to edit _SERVER with proper location
+* Build the server before installing the client
+ 
