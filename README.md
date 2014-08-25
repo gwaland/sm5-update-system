@@ -16,11 +16,11 @@ This is a series of scripts for handling updating stepmania on a server to updat
 ## update-client.sh
 <div>
 
-*   <span style="line-height: 19.5px;">script on client to check for updates. &nbsp;Will grab current md5sum file and compare it to installed md5sum file.&nbsp;</span>
-*   <span style="line-height: 19.5px;">If md5sums do not match new bundle will be downloaded and installed.&nbsp;</span>
-*   <span style="line-height: 19.5px;">If installation fails, this script will enable a backup copy to start.&nbsp;</span>
-*   <span style="line-height: 19.5px;">rsync will be run on the Songs directory on the server to grab any new songs or updates from the server.</span><div>
-</div></div>
+* script on client to check for updates. &nbsp;Will grab current md5sum file and compare it to installed md5sum file.
+* If md5sums do not match new bundle will be downloaded and installed.
+* If installation fails, this script will enable a backup copy to start.
+* rsync will be run on the Songs directory on the server to grab any new songs or updates from the server.
+</div>
 
 ## build-client.sh
 <div>
@@ -29,3 +29,4 @@ This is a series of scripts for handling updating stepmania on a server to updat
 * be sure to edit _SERVER with proper location
 * Build the server before installing the client
  
+</div>
