@@ -20,7 +20,7 @@ This is a series of scripts for handling updating stepmania on a server to updat
 * If md5sums do not match new bundle will be downloaded and installed.
 * If installation fails, this script will enable a backup copy to start.
 * rsync will be run on the Songs directory on the server to grab any new songs or updates from the server.
-</div>
+<div></div></div>
 
 ## build-client.sh
 <div>
