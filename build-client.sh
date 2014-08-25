@@ -1,9 +1,10 @@
 #!/bin/bash
 _PACKAGES='binutils git libmad0 libvorbisfile3 nvidia-173 libglu1-mesa libglew1.10 libjack0 xserver-xorg xinit alsa'
-_SERVER=piu-server
+_SERVER=piu-server.home.priv
 _SERVER_USER=piu
 _USER=$(whoami)
 ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
+ssh-keyscan -H $_SERVER >> ~/.ssh/known_hosts
 cat ~/.ssh/id_rsa.pub | ssh $_SERVER_USER@$_SERVER "cat >> ~/.ssh/authorized_keys"
 
 ln -s ~/sm5-update-system/update-client.sh ~/update.sh
