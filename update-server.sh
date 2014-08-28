@@ -87,7 +87,13 @@ spinner()
 	done
 	printf "    \b\b\b\b"
 }
+#cleanup directories  Takes 1 arg for directory.  Will keep the latest 5 .md5sum and tar.gz in the directory.
 
+cleanup ()
+{
+	PATH=$1
+
+}
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
 build_sm ()
 {
@@ -137,6 +143,8 @@ bundle_sm ()
 	log "Creating stepmania md5sum"
 	md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
 	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
+	cleanup $SM_REPO_PATH
+
 }
 bundle_piu_theme ()
 {
