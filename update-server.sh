@@ -240,9 +240,23 @@ else
 	log 'Forcing update of stepmania package'
 fi
 if [ $BUILD_THEME = 0 ]; then
-	STATUS=$(check_git $THEME_PATH 'piu themes') 
-	BUILD_THEME=$?
-	log $STATUS
+	
+        cd $THEME_PATH
+        for THEME in **
+        do
+		log "Checking Theme: $THEME"
+		if [ -d $THEME_PATH/$THEME/.git ]; then
+			STATUS=$(check_git $THEME_PATH/$THEME "Theme: $THEME") 
+			BUILD_CHECK=$?
+			if [ $BUILD_CHECK = 1 ]; then
+				BUILD_THEME=1
+			fi
+		else
+			STATUS="Theme: $THEME is not a git repository"
+		fi
+
+		log $STATUS
+	done
 else
 	log 'Forcing update of theme package'
 fi
