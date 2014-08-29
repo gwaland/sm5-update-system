@@ -29,6 +29,16 @@ ln -s ~/sm5-update-system/update-server.sh ~/update.sh
 sudo apt-get update
 sudo apt-get -y install $_PACKAGES
 
+echo 'SM_PATH=/home/piu/stepmania' >  ~/.sm5-server.rc
+echo 'SM_INSTALL_PATH=/home/piu/sm5-install' >> ~/.sm5-server.rc
+echo 'PIUIO_PATH=/home/piu/piuio' >> ~/.sm5-server.rc
+echo '#THEME_PATH=/home/piu/Themes/PIU-Delta-GW' >> ~/.sm5-server.rc
+echo 'THEME_PATH=/home/piu/Themes' >> ~/.sm5-server.rc
+echo 'SM_REPO_PATH=/home/piu/repo/sm5' >> ~/.sm5-server.rc
+echo 'THEME_REPO_PATH=/home/piu/repo/theme' >> ~/.sm5-server.rc
+echo 'PIUIO_REPO_PATH=/home/piu/repo/piuio' >> ~/.sm5-server.rc
+echo '#usage display' >> ~/.sm5-server.rc
+
 #Finally force an update on all options
 ~/update.sh -vstp
 
