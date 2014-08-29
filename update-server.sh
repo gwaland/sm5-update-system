@@ -42,6 +42,7 @@ BUILD_PIUIO=0
 BUILD_THEME=0
 VERBOSE=0
 CHECK_ONLY=0
+declare -a BUILD_THEME_NAMES
 while getopts .hsptvc. OPTION
 do
 	case $OPTION in
@@ -100,6 +101,21 @@ cleanup ()
         ls -d -C1 -t $CLEAN_PATH/*.md5sum| awk 'NR>6'|xargs rm -f
 
 }
+#custom script specifically for cleaning the themes directory.
+clean_themes ()
+{
+        CLEAN_PATH=$1
+        cd $THEME_PATH
+        cd $THEME_PATH
+        for THEME in **
+        do
+	        log "Cleaning up $THEME in $CLEAN_PATH"
+        	ls -d -C1 -t $CLEAN_PATH/*$THEME*.gz| awk 'NR>6'|xargs rm -f
+        	ls -d -C1 -t $CLEAN_PATH/*$THEME*.md5sum| awk 'NR>6'|xargs rm -f
+	done
+
+
+}
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
 build_sm ()
 {
@@ -156,7 +172,7 @@ bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
         cd $THEME_PATH 
-	for THEME in **
+	for THEME in $BUILD_THEME_NAMES 
 	do
 		if [ -d  $THEME_PATH/$THEME/.git ]; then 
 			cd $THEME_PATH/$THEME
@@ -179,7 +195,7 @@ bundle_piu_theme ()
 #        md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
 #        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
 
-#	cleanup $THEME_REPO_PATH
+	clean_themes $THEME_REPO_PATH
 
 }
 
@@ -290,7 +306,8 @@ if [ $BUILD_THEME = 0 ]; then
 		fi
                 BUILD_CHECK=$?
                 if [ $BUILD_CHECK = 1 ]; then
-	                BUILD_THEME=1
+	                BUILD_THEME=1i
+			BUILD_THEME_NAMES+=($THEME)
                 fi
 		log $STATUS
 	done
