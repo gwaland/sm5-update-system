@@ -172,7 +172,7 @@ bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
         cd $THEME_PATH 
-	for THEME in $BUILD_THEME_NAMES 
+	for THEME in ${BUILD_THEME_NAMES[@]}
 	do
 		if [ -d  $THEME_PATH/$THEME/.git ]; then 
 			cd $THEME_PATH/$THEME
@@ -306,12 +306,17 @@ if [ $BUILD_THEME = 0 ]; then
 		fi
                 BUILD_CHECK=$?
                 if [ $BUILD_CHECK = 1 ]; then
-	                BUILD_THEME=1i
+	                BUILD_THEME=1
 			BUILD_THEME_NAMES+=($THEME)
                 fi
 		log $STATUS
 	done
 else
+        cd $THEME_PATH
+        for THEME in **
+        do
+		BUILD_THEME_NAMES+=($THEME)
+	done
 	log 'Forcing update of theme package'
 fi
 #Check to see if we are building stepmania
