@@ -13,7 +13,7 @@ mkdir -p ~/repo/piuio
 mkdir -p ~/repo/sm5
 mkdir -p ~/repo/theme
 mkdir -p ~/repo/songs
-mkdir -p ~/Themes
+mkdir -p ~/Themes/.md5sum
 
 #themes are not automatically pulled
 #Grab stepmania and piuio sources

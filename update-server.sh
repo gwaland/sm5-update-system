@@ -158,8 +158,10 @@ bundle_piu_theme ()
         cd $THEME_PATH 
 	for THEME in **
 	do
-		cd $THEME_PATH/$THEME
-		git pull > /dev/null
+		if [ -d  $THEME_PATH/$THEME/.git ]; then 
+			cd $THEME_PATH/$THEME
+			git pull > /dev/null
+		fi
 		cd $THEME_PATH
 		log "Creating theme $THEME bundle"
        		tar -cazf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME
@@ -199,6 +201,7 @@ bundle_piuio ()
 }
 
 #check stepmania to see if it needs to be updated. 
+#expects $1 to be the path to the git repository and $2 to be the name of the repository. 
 check_git ()
 {
 	local GIT_CHECK=0
@@ -219,6 +222,36 @@ check_git ()
         fi
 	exit $GIT_CHECK
 
+}
+#takes md5sum of files and then md5sums those files.
+# $1 is the path to the directory to be checked. 
+# $2 is the path to the md5sum directory
+# $3 name of the repository
+check_md5sum ()
+{
+	local CHECK_PATH=$1
+	local MD5_PATH=$2
+	local REPO_NAME=$3
+	local MD5_CHECK=0
+	local NEW_MD5=$(find  $CHECK_PATH -type f -exec md5sum {} + | awk '{print $1}' | sort | md5sum| awk '{ print $1 }')
+	if [ -f $MD5_PATH/$REPO_NAME ]; then
+		#load  md5sum file and compare
+		CURRENT_MD5=$(<$MD5_PATH/$REPO_NAME)
+		if [ "$CURRENT_MD5" = "$NEW_MD5" ]; then
+			log "$REPO_NAME is current."
+		else
+			log "building $REPO_NAME bundle"
+			MD5_CHECK=1
+			if [ $CHECK_ONLY = 0 ]; then
+				echo $NEW_MD5 > $MD5_PATH/$REPO_NAME
+			fi
+		fi
+	else
+		MD5_CHECK=1
+		echo $NEW_MD5 > $MD5_PATH/$REPO_NAME
+		log "Creating new repo for $REPO_NAME"
+	fi
+	exit $MD5_CHECK
 }
 
 #main functions. 
@@ -246,15 +279,19 @@ if [ $BUILD_THEME = 0 ]; then
         do
 		log "Checking Theme: $THEME"
 		if [ -d $THEME_PATH/$THEME/.git ]; then
-			STATUS=$(check_git $THEME_PATH/$THEME "Theme: $THEME") 
-			BUILD_CHECK=$?
-			if [ $BUILD_CHECK = 1 ]; then
-				BUILD_THEME=1
-			fi
+			STATUS=$(check_git $THEME_PATH/$THEME $THEME) 
+#			BUILD_CHECK=$?
+#			if [ $BUILD_CHECK = 1 ]; then
+#				BUILD_THEME=1
+#			fi
 		else
-			STATUS="Theme: $THEME is not a git repository"
-		fi
+			STATUS=$(check_md5sum $THEME_PATH/$THEME $THEME_PATH/.md5sum $THEME)
 
+		fi
+                BUILD_CHECK=$?
+                if [ $BUILD_CHECK = 1 ]; then
+	                BUILD_THEME=1
+                fi
 		log $STATUS
 	done
 else
