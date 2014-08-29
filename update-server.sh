@@ -104,9 +104,9 @@ cleanup ()
 build_sm ()
 {
 	cd $SM_PATH
-	log "Updating Repository"
+	log "Updating Stepmania sources"
 	git pull > /dev/null
-	log "Cleaning Stepmania Repo"
+	log "Cleaning Stepmania source directory"
 	make clean > /dev/null 2>&1 &
 	spinner $!
 	log "Configuring Stepmania"
@@ -156,15 +156,29 @@ bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
         cd $THEME_PATH 
-	git pull > /dev/null
-	log "Creating piu theme bundle"
-	tar -cazf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
-        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-delta-theme-current.tar.gz
-        log "Creating piu theme md5sum"
-        md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
-        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
+	for THEME in **
+	do
+		cd $THEME_PATH/$THEME
+		git pull > /dev/null
+		cd $THEME_PATH
+		log "Creating theme $THEME bundle"
+       		tar -cazf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME
+		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-$THEME-theme-current.tar.gz
+		log "Creating theme $THEME md5sum"
+		md5sum $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum
+		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
 
-	cleanup $THEME_REPO_PATH
+	done
+#	git pull > /dev/null
+#	log "Creating piu theme bundle"
+#	tar -cazf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
+#        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-delta-theme-current.tar.gz
+#        log "Creating piu theme md5sum"
+#        md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
+#        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
+
+#	cleanup $THEME_REPO_PATH
+
 }
 
 bundle_piuio ()
@@ -226,7 +240,7 @@ else
 	log 'Forcing update of stepmania package'
 fi
 if [ $BUILD_THEME = 0 ]; then
-	STATUS=$(check_git $THEME_PATH 'piu theme') 
+	STATUS=$(check_git $THEME_PATH 'piu themes') 
 	BUILD_THEME=$?
 	log $STATUS
 else
