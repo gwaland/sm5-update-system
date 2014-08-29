@@ -3,13 +3,15 @@
 #SM_PATH=/home/piu/stepmania
 #SM_INSTALL_PATH=/home/piu/sm5-install
 #PIUIO_PATH=/home/piu/piuio
-#THEME_PATH=/home/piu/Themes/PIU-Delta-GW
 #THEME_PATH=/home/piu/Themes
 #SM_REPO_PATH=/home/piu/repo/sm5
 #THEME_REPO_PATH=/home/piu/repo/theme
 #PIUIO_REPO_PATH=/home/piu/repo/piuio
 #usage display
-source ~/.sm5-update.conf
+. ~/.sm5-server.rc
+
+
+
 log()
 {
 	if [ $VERBOSE = 1 ]; then
@@ -91,7 +93,11 @@ spinner()
 
 cleanup ()
 {
-	PATH=$1
+	CLEAN_PATH=$1
+	cd $CLEAN_PATH
+	log "Cleaning up $CLEAN_PATH"
+        ls -d -C1 -t $CLEAN_PATH/*.gz| awk 'NR>6'|xargs rm -f
+        ls -d -C1 -t $CLEAN_PATH/*.md5sum| awk 'NR>6'|xargs rm -f
 
 }
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
@@ -158,14 +164,24 @@ bundle_piu_theme ()
         md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
         ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
 
-
+	cleanup $THEME_REPO_PATH
 }
 
 bundle_piuio ()
 {
+	_NOW=$(date +%Y%m%d%H%M)
 	cd $PIUIO_PATH
-	log 'Creating PIUIO bundle'
+	git pull > /dev/null
+	log "Creating PIUIO bundle"
+	cd ..
+        tar -cazf $PIUIO_REPO_PATH/piuio-$_NOW.tar.gz piuio
+        ln -sf $PIUIO_REPO_PATH/piuio-$_NOW.tar.gz $PIUIO_REPO_PATH/piuio-current.tar.gz
+        log "Creating PIUIO md5sum"
+        md5sum $PIUIO_REPO_PATH/piuio-$_NOW.tar.gz | awk '{ print $1 }' > $PIUIO_REPO_PATH/piuio-$_NOW.md5sum
+        ln -sf $PIUIO_REPO_PATH/piuio-$_NOW.md5sum $PIUIO_REPO_PATH/piuio-current.md5sum
+	
 #still working on this. 
+	cleanup $PIUIO_REPO_PATH
 }
 
 #check stepmania to see if it needs to be updated. 
