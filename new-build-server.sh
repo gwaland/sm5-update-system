@@ -16,7 +16,7 @@ SCRIPT_PATH=`dirname $SCRIPT`
 _EXIT_STATUS=1
 while [ $_EXIT_STATUS -ne 0 ]; do 
 	PASSWORD=$(whiptail --inputbox "What is your password for $_USER?" 8 78 --title "Sudo Password" 3>&1 1>&2 2>&3)
-	echo $PASSWORD | sudo -S echo
+	echo $PASSWORD | sudo -S echo > /dev/null
 	_EXIT_STATUS=$?
 done
 SM_PATH=$(whiptail --inputbox "Path for stepmania source installation" 8 78 /home/$_USER/stepmania --title "Stepmania Source Path" 3>&1 1>&2 2>&3)
