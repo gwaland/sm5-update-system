@@ -3,42 +3,89 @@ _PACKAGES="mesa-common-dev libglu1-mesa-dev libxtst-dev  libxrandr-dev libpng12-
 _USER=$(whoami)
 _GIT_SM="https://github.com/stepmania/stepmania.git"
 _GIT_PIUIO="https://github.com/djpohly/piuio.git"
+_GIT_CONSENSUAL="https://github.com/kyzentun/consensual.git"
 #change this to master to use the new io. (at this time lights aren't supported.
 _PIUIO_BRANCH="legacy"
 
+# Absolute path to this script. /home/user/bin/foo.sh
+SCRIPT=$(readlink -f $0)
+# Absolute path this script is in. /home/user/bin
+SCRIPT_PATH=`dirname $SCRIPT`
+
+
+#spinner class (probably needs to be taken out or a -q -v option added to enable it.
+spinner()
+{
+        local pid=$1
+        local delay=0.75
+        local spinstr='|/-\'
+        while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        	local temp=${spinstr#?}
+                printf " [%c]  " "$spinstr"
+                local spinstr=$temp${spinstr%"$temp"}
+                sleep $delay
+                printf "\b\b\b\b\b\b"
+        done
+        printf "    \b\b\b\b"
+}
+
+
+#interactive portion
+_EXIT_STATUS=1
+while [ $_EXIT_STATUS -ne 0 ]; do 
+	PASSWORD=$(whiptail --passwordbox "What is your password for $_USER?" 8 78 --title "Sudo Password" 3>&1 1>&2 2>&3)
+	echo $PASSWORD | sudo -S echo > /dev/null
+	_EXIT_STATUS=$?
+done
+SM_PATH=$(whiptail --inputbox "Path for stepmania source installation" 8 78 /home/$_USER/stepmania --title "Stepmania Source Path" 3>&1 1>&2 2>&3)
+SM_INSTALL_PATH=$(whiptail --inputbox "Path for stepmania package installation" 8 78 /home/$_USER/sm5-install --title "Stepmania package install Path" 3>&1 1>&2 2>&3)
+PIUIO_PATH=$(whiptail --inputbox "Path for piuio source installation" 8 78 /home/$_USER/piuio --title "PIUIO Source Path" 3>&1 1>&2 2>&3)
+THEME_PATH=$(whiptail --inputbox "Path for Theme installations" 8 78 /home/$_USER/Themes --title "Theme Source Path" 3>&1 1>&2 2>&3)
+SM_REPO_PATH=$(whiptail --inputbox "Path for the Stepmania Repository" 8 78 /home/$_USER/repo/sm5 --title "Stepmania Repository Path" 3>&1 1>&2 2>&3)
+THEME_REPO_PATH=$(whiptail --inputbox "Path for the Themes Repository" 8 78 /home/$_USER/repo/theme --title "Themes Repository Path" 3>&1 1>&2 2>&3)
+PIUIO_REPO_PATH=$(whiptail --inputbox "Path for the PIUIO Repository" 8 78 /home/$_USER/repo/piuio --title "PIUIO Repository Path" 3>&1 1>&2 2>&3)
+SONG_REPO_PATH=$(whiptail --inputbox "Path for the songs Repository" 8 78 /home/$_USER/repo/songs --title "Songs Repository Path" 3>&1 1>&2 2>&3)
+
+
+#get the sudo stuff out of the way first.
+echo "updating APT"
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq update > /dev/null 2>&1 &
+spinner $!
+
+echo "Installing Packages"
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
+spinner $!
+
+
 #generate keys and directories needed.
 ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
-mkdir -p ~/sm5-install
-mkdir -p ~/repo/piuio
-mkdir -p ~/repo/sm5
-mkdir -p ~/repo/theme
-mkdir -p ~/repo/songs
-mkdir -p ~/Themes/.md5sum
+mkdir -p $SM_INSTALL_PATH
+mkdir -p $PIUIO_REPO_PATH
+mkdir -p $SM_REPO_PATH
+mkdir -p $THEME_REPO_PATH
+mkdir -p $SONG_REPO_PATH 
+mkdir -p $THEME_PATH/.md5sum
 
 #themes are not automatically pulled
 #Grab stepmania and piuio sources
-cd ~
-git clone $_GIT_SM
-git clone $_GIT_PIUIO -b $_PIUIO_BRANCH
+git clone $_GIT_SM $SM_PATH
+git clone $_GIT_PIUIO -b $_PIUIO_BRANCH $PIUIO_PATH
+git clone $_GIT_CONSENSUAL $THEME_PATH/consensual/
 
 #create link to updater (Assuming this is in ~/sm5-update-system for now. 
-ln -s ~/sm5-update-system/update-server.sh ~/update.sh
-(crontab -l 2>/dev/null; echo "  0 *  *   *   *  bash /home/piu/update.sh") | crontab -
+ln -s $SCRIPT_PATH/update-server.sh /home/$_USER/update.sh
+(crontab -l 2>/dev/null; echo "  0 *  *   *   *  bash /home/$_USER/update.sh") | crontab -
 
-#install packages
-sudo apt-get update
-sudo apt-get -y install $_PACKAGES
 
-echo 'SM_PATH=/home/piu/stepmania' >  ~/.sm5-server.rc
-echo 'SM_INSTALL_PATH=/home/piu/sm5-install' >> ~/.sm5-server.rc
-echo 'PIUIO_PATH=/home/piu/piuio' >> ~/.sm5-server.rc
-echo '#THEME_PATH=/home/piu/Themes/PIU-Delta-GW' >> ~/.sm5-server.rc
-echo 'THEME_PATH=/home/piu/Themes' >> ~/.sm5-server.rc
-echo 'SM_REPO_PATH=/home/piu/repo/sm5' >> ~/.sm5-server.rc
-echo 'THEME_REPO_PATH=/home/piu/repo/theme' >> ~/.sm5-server.rc
-echo 'PIUIO_REPO_PATH=/home/piu/repo/piuio' >> ~/.sm5-server.rc
-echo '#usage display' >> ~/.sm5-server.rc
+echo "SM_PATH=$SM_PATH" >  ~/.sm5-server.rc
+echo "SM_INSTALL_PATH=$SM_INSTALL_PATH" >> ~/.sm5-server.rc
+echo "PIUIO_PATH=$PIUIO_PATH" >> ~/.sm5-server.rc
+echo "THEME_PATH=$THEME_PATH" >> ~/.sm5-server.rc
+echo "SM_REPO_PATH=$SM_REPO_PATH" >> ~/.sm5-server.rc
+echo "THEME_REPO_PATH=$THEME_REPO_PATH" >> ~/.sm5-server.rc
+echo "PIUIO_REPO_PATH=$PIUIO_REPO_PATH" >> ~/.sm5-server.rc
+echo "SONG_REPO_PATH=$SONG_REPO_PATH" >> ~/.sm5-server.rc
 
 #Finally force an update on all options
-~/update.sh -vstp
+/home/$_USER/update.sh -vstp
 
