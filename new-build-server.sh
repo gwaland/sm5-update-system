@@ -26,7 +26,7 @@ THEME_PATH=$(whiptail --inputbox "Path for Theme installations" 8 78 /home/$_USE
 SM_REPO_PATH=$(whiptail --inputbox "Path for the Stepmania Repository" 8 78 /home/$_USER/repo/sm5 --title "Stepmania Repository Path" 3>&1 1>&2 2>&3)
 THEME_REPO_PATH=$(whiptail --inputbox "Path for the Themes Repository" 8 78 /home/$_USER/repo/theme --title "Themes Repository Path" 3>&1 1>&2 2>&3)
 PIUIO_REPO_PATH=$(whiptail --inputbox "Path for the PIUIO Repository" 8 78 /home/$_USER/repo/piuio --title "PIUIO Repository Path" 3>&1 1>&2 2>&3)
-
+SONG_REPO_PATH=$(whiptail --inputbox "Path for the songs Repository" 8 78 /home/$_USER/repo/songs --title "Songs Repository Path" 3>&1 1>&2 2>&3)
 
 #get the sudo stuff out of the way first.
 echo -e "$PASSWORD\n" | sudo -S apt-get -qq update
@@ -60,6 +60,7 @@ echo "THEME_PATH=$THEME_PATH" >> ~/.sm5-server.rc
 echo "SM_REPO_PATH=$SM_REPO_PATH" >> ~/.sm5-server.rc
 echo "THEME_REPO_PATH=$THEME_REPO_PATH" >> ~/.sm5-server.rc
 echo "PIUIO_REPO_PATH=$PIUIO_REPO_PATH" >> ~/.sm5-server.rc
+echo "SONG_REPO_PATH=$SONG_REPO_PATH" >> ~/.sm5-server.rc
 
 #Finally force an update on all options
 /home/$_USER/update.sh -vstp
