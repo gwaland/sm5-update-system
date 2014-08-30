@@ -38,17 +38,17 @@ sudo sed -i s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"nomodeset\"/g /etc/de
 sudo sed -i s/#GRUB_TERMINAL=console/GRUB_TERMINAL=console/g /etc/default/grub
 sudo sed -i s/#GRUB_GFXMODE=640x480/GRUB_GFXMODE=640x480/g /etc/default/grub
 sudo update-grub
-sudo sed -i s/exit 0//g /etc/rc.local
+sudo sed -i s/exi/#exi/g /etc/rc.local
 sudo  sh -c 'echo chmod a+wrx /dev/piuio0 >> /etc/rc.local'
 sudo sh -c 'echo exit 0 >> /etc/rc.local'
 sudo sed -i s/exec/#exec/g /etc/init/tty1.conf
 sudo sh -c 'echo "exec /bin/login -f piu tty1 </dev/tty1 >/dev/tty1 2>&1" >> /etc/init/tty1.conf'
 sudo usermod -G audio $_USER
 echo updating apt.
-sudo apt-get -qq update 2>&1 &
+sudo apt-get -qq update > /dev/null 2>&1 &
 spinner $!
 echo installing packages.
-sudo apt-get -qq -y install $_PACKAGES  2>&1 &
+sudo apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
 spinner $!
 
 sudo alsa force-reload
