@@ -1,14 +1,15 @@
 #/bin/bash
 #rsync -avrc -e ssh piu-server:~/Songs/* /home/piu/Songs/
 #cp -rsf /home/piu/Songs/ /home/piu/sm5/
-_SERVER=piu-server.home.priv
-_REMOTE_SONG_PATH='/home/piu/repo/songs/'
-_REMOTE_THEME_PATH=/home/piu/repo/theme/*current*
-_REMOTE_SM_PATH=/home/piu/repo/sm5/*current*
-_REMOTE_PIUIO_PATH=/home/piu/repo/piuio/*current*
-_LOCAL_UPDATE_PATH=/home/piu/new/
-_LOCAL_SONG_PATH=/home/piu/Songs/
-_LOCAL_SM_PATH=/home/piu/sm5/
+#_SERVER=piu-server.home.priv
+#_REMOTE_SONG_PATH='/home/piu/repo/songs/'
+#_REMOTE_THEME_PATH=/home/piu/repo/theme/*current*
+#_REMOTE_SM_PATH=/home/piu/repo/sm5/*current*
+#_REMOTE_PIUIO_PATH=/home/piu/repo/piuio/*current*
+#_LOCAL_UPDATE_PATH=/home/piu/new/
+#_LOCAL_SONG_PATH=/home/piu/Songs/
+#_LOCAL_SM_PATH=/home/piu/sm5/
+. ~/.sm5-client.rc
 
 progress()
 {

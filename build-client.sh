@@ -62,4 +62,17 @@ echo 'if [ -z "$DISPLAY" ] && [ $(tty) == /dev/tty1 ]; then' >> ~/.profile
 echo '    startx' >> ~/.profile
 echo 'fi' >> ~/.profile
 
+
+#build ~/.sm5-client.rc
+echo "_SERVER=piu-server.home.priv" > ~/.sm5-client.rc
+echo "_REMOTE_SONG_PATH='/home/piu/repo/songs/'" >> ~/.sm5-client.rc
+echo "_REMOTE_THEME_PATH=/home/piu/repo/theme/*current*" >> ~/.sm5-client.rc
+echo "_REMOTE_SM_PATH=/home/piu/repo/sm5/*current*" >> ~/.sm5-client.rc
+echo "_REMOTE_PIUIO_PATH=/home/piu/repo/piuio/*current*" >> ~/.sm5-client.rc
+echo "_LOCAL_UPDATE_PATH=/home/piu/new/" >> ~/.sm5-client.rc
+echo "_LOCAL_SONG_PATH=/home/piu/Songs/" >> ~/.sm5-client.rc
+echo "_LOCAL_SM_PATH=/home/piu/sm5/" >> ~/.sm5-client.rc
+
+
+
 ~/update.sh
