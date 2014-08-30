@@ -11,13 +11,11 @@ spinner()
         local delay=0.75
         local spinstr='|/-\'
         while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-                if [ $VERBOSE = 1 ]; then
-                        local temp=${spinstr#?}
-                        printf " [%c]  " "$spinstr"
-                        local spinstr=$temp${spinstr%"$temp"}
-                        sleep $delay
-                        printf "\b\b\b\b\b\b"
-                fi
+                local temp=${spinstr#?}
+                printf " [%c]  " "$spinstr"
+                local spinstr=$temp${spinstr%"$temp"}
+                sleep $delay
+                printf "\b\b\b\b\b\b"
         done
         printf "    \b\b\b\b"
 }
