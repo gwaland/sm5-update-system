@@ -15,7 +15,7 @@ SCRIPT_PATH=`dirname $SCRIPT`
 #interactive portion
 _EXIT_STATUS=1
 while [ $_EXIT_STATUS -ne 0 ]; do 
-	PASSWORD=$(whiptail --inputbox "What is your password for $_USER?" 8 78 --title "Sudo Password" 3>&1 1>&2 2>&3)
+	PASSWORD=$(whiptail --passwordbox "What is your password for $_USER?" 8 78 --title "Sudo Password" 3>&1 1>&2 2>&3)
 	echo $PASSWORD | sudo -S echo > /dev/null
 	_EXIT_STATUS=$?
 done
