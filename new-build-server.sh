@@ -12,6 +12,26 @@ SCRIPT=$(readlink -f $0)
 # Absolute path this script is in. /home/user/bin
 SCRIPT_PATH=`dirname $SCRIPT`
 
+
+#spinner class (probably needs to be taken out or a -q -v option added to enable it.
+spinner()
+{
+        local pid=$1
+        local delay=0.75
+        local spinstr='|/-\'
+        while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+                if [ $VERBOSE = 1 ]; then
+                        local temp=${spinstr#?}
+                        printf " [%c]  " "$spinstr"
+                        local spinstr=$temp${spinstr%"$temp"}
+                        sleep $delay
+                        printf "\b\b\b\b\b\b"
+                fi
+        done
+        printf "    \b\b\b\b"
+}
+
+
 #interactive portion
 _EXIT_STATUS=1
 while [ $_EXIT_STATUS -ne 0 ]; do 
@@ -28,9 +48,15 @@ THEME_REPO_PATH=$(whiptail --inputbox "Path for the Themes Repository" 8 78 /hom
 PIUIO_REPO_PATH=$(whiptail --inputbox "Path for the PIUIO Repository" 8 78 /home/$_USER/repo/piuio --title "PIUIO Repository Path" 3>&1 1>&2 2>&3)
 SONG_REPO_PATH=$(whiptail --inputbox "Path for the songs Repository" 8 78 /home/$_USER/repo/songs --title "Songs Repository Path" 3>&1 1>&2 2>&3)
 
+
 #get the sudo stuff out of the way first.
-echo -e "$PASSWORD\n" | sudo -S apt-get -qq update
-echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES
+echo "updating APT"
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq update > /dev/null 2>&1 &
+spinner $!
+
+echo "Installing Packages"
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
+spinner $!
 
 
 #generate keys and directories needed.
