@@ -1,5 +1,5 @@
 #!/bin/bash
-_PACKAGES='binutils git libmad0 libvorbisfile3 nvidia-173 libglu1-mesa libglew1.10 libjack0 xserver-xorg xinit alsa'
+_PACKAGES='binutils libpulse0 git libmad0 libvorbisfile3 nvidia-173 libglu1-mesa libglew1.10 libjack0 xserver-xorg xinit alsa'
 _SERVER=piu-server.home.priv
 _SERVER_USER=piu
 _USER=$(whoami)
