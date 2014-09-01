@@ -21,6 +21,18 @@ spinner()
 }
 
 
+#interactive portion
+_EXIT_STATUS=1
+while [ $_EXIT_STATUS -ne 0 ]; do
+        _PASSWORD=$(whiptail --passwordbox "What is your password for $_USER?" 8 78 --title "Sudo Password" 3>&1 1>&2 2>&3)
+        echo $_PASSWORD | sudo -S echo > /dev/null
+        _EXIT_STATUS=$?
+done
+_SERVER=$(whiptail --inputbox "What is the IP or hostname of the Server?" 8 78 /home/$_USER/stepmania --title "Server Name" 3>&1 1>&2 2>&3)
+_SERVER_USER=$(whiptail --inputbox "What is the username for the server?" 8 78 /home/$_USER/stepmania --title "Server Username" 3>&1 1>&2 2>&3)
+_SERVER_PASSWORD=$(whiptail --inputbox "What is the password for the server?" 8 78 /home/$_USER/stepmania --title "Server Password" 3>&1 1>&2 2>&3)
+
+
 
 ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
 ssh-keyscan -H $_SERVER >> ~/.ssh/known_hosts
@@ -43,7 +55,7 @@ sudo  sh -c 'echo chmod a+wrx /dev/piuio0 >> /etc/rc.local'
 sudo sh -c 'echo exit 0 >> /etc/rc.local'
 sudo sed -i s/exec/#exec/g /etc/init/tty1.conf
 sudo sh -c 'echo "exec /bin/login -f piu tty1 </dev/tty1 >/dev/tty1 2>&1" >> /etc/init/tty1.conf'
-sudo usermod -G audio $_USER
+sudo usermod -a -G audio $_USER
 echo updating apt.
 sudo apt-get -qq update > /dev/null 2>&1 &
 spinner $!
