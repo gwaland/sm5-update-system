@@ -139,15 +139,16 @@ build_sm ()
 		make install > make.install 2>&1 &
 		spinner $!
 	        cd $SM_INSTALL_PATH/stepmania\ 5
+echo $(pwd)
         	mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
 	        mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
         	mkdir -p bundle/ffmpeg/libavutil/ > /dev/null
 	        mkdir -p bundle/ffmpeg/libswscale/ > /dev/null
         	mkdir -p bundle/ffmpeg/libavcodec/ > /dev/null
-	        cp /home/piu/stepmania/bundle/ffmpeg/libavformat/libavformat.so.55 bundle/ffmpeg/libavformat/
-        	cp /home/piu/stepmania/bundle/ffmpeg/libavutil/libavutil.so.52 bundle/ffmpeg/libavutil/
-	        cp /home/piu/stepmania/bundle/ffmpeg/libswscale/libswscale.so.2 bundle/ffmpeg/libswscale/
-        	cp /home/piu/stepmania/bundle/ffmpeg/libavcodec/libavcodec.so.55 bundle/ffmpeg/libavcodec
+	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55 bundle/ffmpeg/libavformat/
+        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52 bundle/ffmpeg/libavutil/
+	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2 bundle/ffmpeg/libswscale/
+        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55 bundle/ffmpeg/libavcodec
 	        touch portable.ini
 		bundle_sm
 	fi
@@ -158,6 +159,7 @@ bundle_sm ()
 {
 	_NOW=$(date +%Y%m%d%H%M)
 	cd $SM_INSTALL_PATH/stepmania\ 5
+	echo $(pwd)
 	touch build-$_NOW
 	log "Creating stepmania tar bundle."
 	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
