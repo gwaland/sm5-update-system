@@ -95,7 +95,7 @@ spinner()
 cleanup ()
 {
 	CLEAN_PATH=$1
-	cd $CLEAN_PATH
+	cd "$CLEAN_PATH"
 	log "Cleaning up $CLEAN_PATH"
         ls -d -C1 -t $CLEAN_PATH/*.gz| awk 'NR>6'|xargs rm -f
         ls -d -C1 -t $CLEAN_PATH/*.md5sum| awk 'NR>6'|xargs rm -f
@@ -105,8 +105,7 @@ cleanup ()
 clean_themes ()
 {
         CLEAN_PATH=$1
-        cd $THEME_PATH
-        cd $THEME_PATH
+        cd "$THEME_PATH"
         for THEME in **
         do
 	        log "Cleaning up $THEME in $CLEAN_PATH"
@@ -119,7 +118,7 @@ clean_themes ()
 #basic function to update to the latest get, run make clean and make and if successful build the release package.
 build_sm ()
 {
-	cd $SM_PATH
+	cd "$SM_PATH"
 	log "Updating Stepmania sources"
 	git pull > /dev/null
 	log "Cleaning Stepmania source directory"
@@ -138,18 +137,19 @@ build_sm ()
 #		cp src/GtkModule.so ./
 		make install > make.install 2>&1 &
 		spinner $!
-	        cd $SM_INSTALL_PATH/stepmania\ 5
-echo $(pwd)
-        	mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
-	        mkdir -p bundle/ffmpeg/libavformat/ > /dev/null
-        	mkdir -p bundle/ffmpeg/libavutil/ > /dev/null
-	        mkdir -p bundle/ffmpeg/libswscale/ > /dev/null
-        	mkdir -p bundle/ffmpeg/libavcodec/ > /dev/null
-	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55 bundle/ffmpeg/libavformat/
-        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52 bundle/ffmpeg/libavutil/
-	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2 bundle/ffmpeg/libswscale/
-        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55 bundle/ffmpeg/libavcodec
+	        cd "$SM_INSTALL_PATH/stepmania 5"
+log "I'm in directory $(pwd)"
+        	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
+	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
+        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/ > /dev/null
+	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/ > /dev/null
+        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec/ > /dev/null
+	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/
+        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/
+	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/
+        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec
 	        touch portable.ini
+log "I'm still in directory $(pwd)"
 		bundle_sm
 	fi
 }
@@ -158,8 +158,9 @@ echo $(pwd)
 bundle_sm ()
 {
 	_NOW=$(date +%Y%m%d%H%M)
-	cd $SM_INSTALL_PATH/stepmania\ 5
-	echo $(pwd)
+log "I'm bundling and I'm in director $(pwd)"
+	cd "$SM_INSTALL_PATH/stepmania 5"
+log "force changed directory and I'm in  $(pwd)"
 	touch build-$_NOW
 	log "Creating stepmania tar bundle."
 	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
@@ -173,14 +174,14 @@ bundle_sm ()
 bundle_piu_theme ()
 {
         _NOW=$(date +%Y%m%d%H%M)
-        cd $THEME_PATH 
+        cd "$THEME_PATH"
 	for THEME in ${BUILD_THEME_NAMES[@]}
 	do
 		if [ -d  $THEME_PATH/$THEME/.git ]; then 
-			cd $THEME_PATH/$THEME
+			cd "$THEME_PATH/$THEME"
 			git pull > /dev/null
 		fi
-		cd $THEME_PATH
+		cd "$THEME_PATH"
 		log "Creating theme $THEME bundle"
        		tar -cazf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME
 		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-$THEME-theme-current.tar.gz
@@ -204,7 +205,7 @@ bundle_piu_theme ()
 bundle_piuio ()
 {
 	_NOW=$(date +%Y%m%d%H%M)
-	cd $PIUIO_PATH
+	cd "$PIUIO_PATH"
 	git pull > /dev/null
 	log "Creating PIUIO bundle"
 	cd ..
@@ -223,7 +224,7 @@ bundle_piuio ()
 check_git ()
 {
 	local GIT_CHECK=0
-	cd $1
+	cd "$1"
 	git fetch
         LOCAL=$(git rev-parse HEAD)
         REMOTE=$(git rev-parse @{u})
@@ -292,7 +293,7 @@ else
 fi
 if [ $BUILD_THEME = 0 ]; then
 	
-        cd $THEME_PATH
+        cd "$THEME_PATH"
         for THEME in **
         do
 		log "Checking Theme: $THEME"
@@ -314,7 +315,7 @@ if [ $BUILD_THEME = 0 ]; then
 		log $STATUS
 	done
 else
-        cd $THEME_PATH
+        cd "$THEME_PATH"
         for THEME in **
         do
 		BUILD_THEME_NAMES+=($THEME)
