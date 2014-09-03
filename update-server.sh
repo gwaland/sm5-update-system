@@ -1,24 +1,24 @@
 #!/bin/bash
+#import settings.
+if [ -f ~/.sm5-server.rc ]; then
+	. ~/.sm5-server.rc
+else
+	echo "configuration missing!" 
+	exit 1
+fi
+#verify settings import
 
-#SM_PATH=/home/piu/stepmania
-#SM_INSTALL_PATH=/home/piu/sm5-install
-#PIUIO_PATH=/home/piu/piuio
-#THEME_PATH=/home/piu/Themes
-#SM_REPO_PATH=/home/piu/repo/sm5
-#THEME_REPO_PATH=/home/piu/repo/theme
-#PIUIO_REPO_PATH=/home/piu/repo/piuio
-#usage display
-. ~/.sm5-server.rc
-
-
-
+#log to console if verbose and to syslog if not. 
 log()
 {
+	_MESSAGE=$@
 	if [ $VERBOSE = 1 ]; then
-		echo "$@"
+		echo "$_MESSAGE"
 	fi
+#	logger $_MESSAGE
 }
 
+#usage display.
 usage()
 {
 cat << EOF
@@ -73,7 +73,7 @@ do
 	esac
 done
 
-#spinner class (probably needs to be taken out or a -q -v option added to enable it. 
+#spinner class for long tasks 
 spinner()
 {
 	local pid=$1
@@ -88,10 +88,11 @@ spinner()
 			printf "\b\b\b\b\b\b"
 		fi
 	done
-	printf "    \b\b\b\b"
+	if [ $VERBOSE = 1 ]; then
+		printf "    \b\b\b\b"
+	fi
 }
 #cleanup directories  Takes 1 arg for directory.  Will keep the latest 5 .md5sum and tar.gz in the directory.
-
 cleanup ()
 {
 	CLEAN_PATH=$1
@@ -115,7 +116,7 @@ clean_themes ()
 
 
 }
-#basic function to update to the latest get, run make clean and make and if successful build the release package.
+#basic function to update to the latest git, run make clean and make and if successful build the release package.
 build_sm ()
 {
 	cd "$SM_PATH"
@@ -133,12 +134,9 @@ build_sm ()
 	make > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
-#		cp src/stepmania ./
-#		cp src/GtkModule.so ./
 		make install > make.install 2>&1 &
 		spinner $!
 	        cd "$SM_INSTALL_PATH/stepmania 5"
-log "I'm in directory $(pwd)"
         	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
 	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
         	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/ > /dev/null
@@ -149,7 +147,6 @@ log "I'm in directory $(pwd)"
 	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/
         	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec
 	        touch portable.ini
-log "I'm still in directory $(pwd)"
 		bundle_sm
 	fi
 }
@@ -158,9 +155,7 @@ log "I'm still in directory $(pwd)"
 bundle_sm ()
 {
 	_NOW=$(date +%Y%m%d%H%M)
-log "I'm bundling and I'm in director $(pwd)"
 	cd "$SM_INSTALL_PATH/stepmania 5"
-log "force changed directory and I'm in  $(pwd)"
 	touch build-$_NOW
 	log "Creating stepmania tar bundle."
 	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
@@ -190,14 +185,6 @@ bundle_piu_theme ()
 		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
 
 	done
-#	git pull > /dev/null
-#	log "Creating piu theme bundle"
-#	tar -cazf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz BANNERS/ Fonts/ BGAnimations/ Graphics/ Languages/ Other/ metrics.ini Scripts/ Sounds/ ThemeInfo.ini
-#        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-delta-theme-current.tar.gz
-#        log "Creating piu theme md5sum"
-#        md5sum $THEME_REPO_PATH/piu-delta-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum
-#        ln -sf $THEME_REPO_PATH/piu-delta-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-delta-theme-current.md5sum
-
 	clean_themes $THEME_REPO_PATH
 
 }
@@ -215,11 +202,10 @@ bundle_piuio ()
         md5sum $PIUIO_REPO_PATH/piuio-$_NOW.tar.gz | awk '{ print $1 }' > $PIUIO_REPO_PATH/piuio-$_NOW.md5sum
         ln -sf $PIUIO_REPO_PATH/piuio-$_NOW.md5sum $PIUIO_REPO_PATH/piuio-current.md5sum
 	
-#still working on this. 
 	cleanup $PIUIO_REPO_PATH
 }
 
-#check stepmania to see if it needs to be updated. 
+#check a git repository to see if it needs to be updated. 
 #expects $1 to be the path to the git repository and $2 to be the name of the repository. 
 check_git ()
 {
@@ -274,9 +260,7 @@ check_md5sum ()
 }
 
 #main functions. 
-#check_sm
-#check_piuio
-#check_theme
+#checks piuio git 
 if [ $BUILD_PIUIO = 0 ]; then
 	STATUS=$(check_git $PIUIO_PATH 'piuio')
 	BUILD_PIUIO=$?
@@ -284,6 +268,7 @@ if [ $BUILD_PIUIO = 0 ]; then
 else
 	log 'Forcing update of piuio package'
 fi
+#check stepmania's git
 if [ $BUILD_SM = 0 ]; then
 	STATUS=$(check_git $SM_PATH 'stepmania')
 	BUILD_SM=$?
@@ -291,6 +276,9 @@ if [ $BUILD_SM = 0 ]; then
 else
 	log 'Forcing update of stepmania package'
 fi
+
+#checks each directory in the themes directory, determines if it's a git repo or needs an md5sum check and then makes the check
+#if it needs to be updated it will add the theme name to $BUILD_THEME_NAMES and set BUILD_THEME to 1. 
 if [ $BUILD_THEME = 0 ]; then
 	
         cd "$THEME_PATH"
@@ -299,10 +287,6 @@ if [ $BUILD_THEME = 0 ]; then
 		log "Checking Theme: $THEME"
 		if [ -d $THEME_PATH/$THEME/.git ]; then
 			STATUS=$(check_git $THEME_PATH/$THEME $THEME) 
-#			BUILD_CHECK=$?
-#			if [ $BUILD_CHECK = 1 ]; then
-#				BUILD_THEME=1
-#			fi
 		else
 			STATUS=$(check_md5sum $THEME_PATH/$THEME $THEME_PATH/.md5sum $THEME)
 
@@ -320,9 +304,11 @@ else
         do
 		BUILD_THEME_NAMES+=($THEME)
 	done
-	log 'Forcing update of theme package'
+	log 'Forcing update of theme packages'
 fi
-#Check to see if we are building stepmania
+#if we're running a check only we skip this.  
+#Otherwise we run the specific build routines that were either forced by a flag or 
+#Were determined to be out of date. 
 if [ $CHECK_ONLY = 0 ]; then
 	if [ $BUILD_SM = 1 ]; then
 		build_sm
@@ -334,5 +320,6 @@ if [ $CHECK_ONLY = 0 ]; then
                 bundle_piuio
         fi
 fi
-exit 1
+
+exit 0
 
