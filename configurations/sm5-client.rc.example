@@ -5,4 +5,5 @@ _REMOTE_SM_PATH=/home/piu/repo/sm5/*current*
 _REMOTE_PIUIO_PATH=/home/piu/repo/piuio/*current*
 _LOCAL_UPDATE_PATH=/home/piu/new/
 _LOCAL_SONG_PATH=/home/piu/Songs/
+_LOCAL_BACKUP_PATH=/home/piu/backup/
 _LOCAL_SM_PATH=/home/piu/sm5/
