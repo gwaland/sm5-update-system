@@ -1,6 +1,6 @@
 # sm5-update-system
 
-This is a series of scripts for handling updating stepmania on a server to update a pump it up MK6 system. 
+This is a series of scripts for handling updating stepmania on a server to update a pump it up MK6 system when it boots up.  The update-server.sh and build-server are currently relatively stable.   The client side is still being heavily worked on.
 
 ## update-server.sh
 
@@ -37,8 +37,3 @@ This is a series of scripts for handling updating stepmania on a server to updat
  - only git and ssh assumed to be installed
  - Requires the server to be built first. 
  - Will run update-client.sh on boot before starting stepmania
-
-
-
- 
-
