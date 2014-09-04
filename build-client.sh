@@ -30,8 +30,8 @@ echo "updating APT"
 echo -e "$PASSWORD\n" | sudo -S apt-get -qq update > /dev/null 2>&1 &
 spinner $!
 
-echo "Installing Packages"
-echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
+echo "Installing sshpass"
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install sshpass $_PACKAGES > /dev/null 2>&1 &
 spinner $!
 
 
@@ -43,9 +43,11 @@ ssh-keyscan -H $_SERVER >> ~/.ssh/known_hosts
 _EXIT_STATUS=1
 while [ $_EXIT_STATUS -ne 0 ]; do
 	_SERVER_USER=$(whiptail --inputbox "What is the username for the server?" 8 78 piu --title "Server Username" 3>&1 1>&2 2>&3)
-	SSHPASS=$(whiptail --passwordbox "What is the password for the server?" 8 78 --title "Server Password" 3>&1 1>&2 2>&3)
-	sshpass -e ssh $_SERVER_USER@$_SERVER echo
-	_EXIT_STATUS=$?
+	_SERVER_PASSWORD=$(whiptail --passwordbox "What is the password for the server?" 8 78 --title "Server Password" 3>&1 1>&2 2>&3)
+        export SSHPASS=$_SERVER_PASSWORD
+        sshpass -e ssh $_SERVER_USER@$_SERVER echo
+        unset SSHPASS
+        _EXIT_STATUS=$?
 done
 cat ~/.ssh/id_rsa.pub | sshpass -e ssh $_SERVER_USER@$_SERVER "cat >> ~/.ssh/authorized_keys"
 
@@ -98,8 +100,8 @@ echo -e "$PASSWORD\n" | sudo -S usermod -a -G audio $_USER
 #echo updating apt.
 #sudo apt-get -qq update > /dev/null 2>&1 &
 #spinner $!
-#echo installing packages.
-#sudo apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
+echo installing packages.
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
 #spinner $!
 
 echo -e "$PASSWORD\n" | sudo -S alsa force-reload
