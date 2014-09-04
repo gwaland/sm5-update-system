@@ -57,4 +57,6 @@ else
 
 fi
 
+#grab themes and drop them in PACKAGES directory. 
+updateclient $_REMOTE_THEME_PATH $_LOCAL_SM_PATH/Packages 'Stepmania Themes'
 
