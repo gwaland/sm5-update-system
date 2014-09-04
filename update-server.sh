@@ -137,7 +137,8 @@ build_sm ()
 		make install > make.install 2>&1 &
 		spinner $!
 	        cd "$SM_INSTALL_PATH/stepmania 5"
-        	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
+        	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/Packages > /dev/null
+		mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
 	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
         	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/ > /dev/null
 	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/ > /dev/null
@@ -176,16 +177,16 @@ bundle_piu_theme ()
 			cd "$THEME_PATH/$THEME"
 			git pull > /dev/null
 		fi
-		cd "$THEME_PATH"
+		cd "$THEME_PATH"/..
 		log "Creating theme $THEME bundle"
-       		tar -cazf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME
-		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-$THEME-theme-current.tar.gz
-		log "Creating theme $THEME md5sum"
-		md5sum $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum
-		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
-
+#       		tar -cazf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME
+#		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz $THEME_REPO_PATH/piu-$THEME-theme-current.tar.gz
+#		log "Creating theme $THEME md5sum"
+#		md5sum $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum
+#		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
+		zip -9 -r $THEME_REPO_PATH/$THEME.smzip Themes/$THEME 
 	done
-	clean_themes $THEME_REPO_PATH
+#	clean_themes $THEME_REPO_PATH
 
 }
 
