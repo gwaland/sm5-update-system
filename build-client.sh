@@ -52,8 +52,7 @@ cat ~/.ssh/id_rsa.pub | sshpass -e ssh $_SERVER_USER@$_SERVER "cat >> ~/.ssh/aut
 
 #get server settings. 
 scp $_SERVER_USER@$_SERVER:~/.sm5-server.rc /tmp/serversettings
-_EXIT_STATUS=$?
-if [ _EXIT_STATUS -eq 0 ]; then
+if [ -s /tmp/serversettings ]; then
 	. /tmp/serversettings
 	_REMOTE_SM_PATH=$SM_REPO_PATH
 	_REMOTE_THEME_PATH=$THEME_REPO_PATH
