@@ -184,7 +184,7 @@ bundle_piu_theme ()
 #		log "Creating theme $THEME md5sum"
 #		md5sum $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum
 #		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
-		zip -9 -r $THEME_REPO_PATH/$THEME.smzip Themes/$THEME 
+		zip -9 -r -q $THEME_REPO_PATH/$THEME.smzip Themes/$THEME 
 	done
 #	clean_themes $THEME_REPO_PATH
 

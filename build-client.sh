@@ -28,9 +28,19 @@ while [ $_EXIT_STATUS -ne 0 ]; do
         echo $_PASSWORD | sudo -S echo > /dev/null
         _EXIT_STATUS=$?
 done
-_SERVER=$(whiptail --inputbox "What is the IP or hostname of the Server?" 8 78 /home/$_USER/stepmania --title "Server Name" 3>&1 1>&2 2>&3)
-_SERVER_USER=$(whiptail --inputbox "What is the username for the server?" 8 78 /home/$_USER/stepmania --title "Server Username" 3>&1 1>&2 2>&3)
-_SERVER_PASSWORD=$(whiptail --inputbox "What is the password for the server?" 8 78 /home/$_USER/stepmania --title "Server Password" 3>&1 1>&2 2>&3)
+_SERVER=$(whiptail --inputbox "What is the IP or hostname of the Server?" 8 78 sm5-server --title "Server Name" 3>&1 1>&2 2>&3)
+_SERVER_USER=$(whiptail --inputbox "What is the username for the server?" 8 78 piu --title "Server Username" 3>&1 1>&2 2>&3)
+_SERVER_PASSWORD=$(whiptail --passwordbox "What is the password for the server?" 8 78 --title "Server Password" 3>&1 1>&2 2>&3)
+
+_REMOTE_SONG_PATH='/home/piu/repo/songs/'
+_REMOTE_THEME_PATH=/home/piu/repo/theme/*current*
+_REMOTE_SM_PATH=/home/piu/repo/sm5/*current*
+_REMOTE_PIUIO_PATH=/home/piu/repo/piuio/*current*
+_LOCAL_UPDATE_PATH=/home/piu/new/
+_LOCAL_SONG_PATH=/home/piu/Songs/
+_LOCAL_BACKUP_PATH=/home/piu/backup/
+_LOCAL_SM_PATH=/home/piu/sm5/
+
 
 
 
