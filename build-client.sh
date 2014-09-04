@@ -31,7 +31,7 @@ echo -e "$PASSWORD\n" | sudo -S apt-get -qq update > /dev/null 2>&1 &
 spinner $!
 
 echo "Installing sshpass"
-echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install sshpass $_PACKAGES > /dev/null 2>&1 &
+echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install sshpass > /dev/null 2>&1 &
 spinner $!
 
 
