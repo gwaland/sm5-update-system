@@ -46,7 +46,6 @@ while [ $_EXIT_STATUS -ne 0 ]; do
 	_SERVER_PASSWORD=$(whiptail --passwordbox "What is the password for the server?" 8 78 --title "Server Password" 3>&1 1>&2 2>&3)
         export SSHPASS=$_SERVER_PASSWORD
         sshpass -e ssh $_SERVER_USER@$_SERVER echo
-        unset SSHPASS
         _EXIT_STATUS=$?
 done
 cat ~/.ssh/id_rsa.pub | sshpass -e ssh $_SERVER_USER@$_SERVER "cat >> ~/.ssh/authorized_keys"
@@ -65,6 +64,7 @@ else
 	exit 1
 fi
 
+unset SSHPASS
 
 _LOCAL_UPDATE_PATH=$(whiptail --inputbox "Path to store update files?" 8 78 /home/$_USER/new --title "Update Path" 3>&1 1>&2 2>&3)
 _LOCAL_SONG_PATH=$(whiptail --inputbox "Path to store song files?" 8 78 /home/$_USER/Songs --title "Song Path" 3>&1 1>&2 2>&3)
