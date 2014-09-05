@@ -126,7 +126,7 @@ build_sm ()
 	make clean > /dev/null 2>&1 &
 	spinner $!
 	log "Configuring Stepmania"
-	./autogen.sh > /dev/null
+	./autogen.sh 
 	./configure   --with-static-png   --with-static-jpeg --with-static-zlib  --with-static-bzip  --with-static-vorbis --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
 	spinner $!
 	rm -rf $SM_INSTALL_PATH/stepmania\ 5
@@ -149,6 +149,8 @@ build_sm ()
         	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec
 	        touch portable.ini
 		bundle_sm
+	else
+		log "error in make!"
 	fi
 }
 
