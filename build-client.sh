@@ -103,7 +103,7 @@ echo -e "$PASSWORD\n" | sudo -S usermod -a -G audio $_USER
 #spinner $!
 echo installing packages.
 echo -e "$PASSWORD\n" | sudo -S apt-get -qq -y install $_PACKAGES > /dev/null 2>&1 &
-#spinner $!
+spinner $!
 
 echo -e "$PASSWORD\n" | sudo -S alsa force-reload
 
