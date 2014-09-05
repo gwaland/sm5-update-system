@@ -30,11 +30,11 @@ progress $! |  whiptail --title "$3 Updates" --gauge "Downloading new $3" 7 70 0
 
 
 #update Songs and create the symlinks. 
-updateclient $_REMOTE_SONG_PATH $_LOCAL_SONG_PATH 'Songs'
+updateclient $_REMOTE_SONG_PATH/ $_LOCAL_SONG_PATH 'Songs'
 cp -rsf /home/piu/Songs /home/piu/sm5/
 
 #grab potential updates for stepmania.
-updateclient $_REMOTE_SM_PATH $_LOCAL_UPDATE_PATH/sm5 'Stepmania Software'
+updateclient $_REMOTE_SM_PATH/ $_LOCAL_UPDATE_PATH/sm5 'Stepmania Software'
 
 cmp -s $_LOCAL_UPDATE_PATH/sm5/stepmania-build-current.md5sum $_LOCAL_UPDATE_PATH/installed/stepmania-build-current.md5sum 
 if [ $? -eq 0 ]; then
@@ -58,5 +58,5 @@ else
 fi
 
 #grab themes and drop them in PACKAGES directory. 
-updateclient $_REMOTE_THEME_PATH $_LOCAL_SM_PATH/Packages 'Stepmania Themes'
+updateclient $_REMOTE_THEME_PATH/ $_LOCAL_SM_PATH/Packages 'Stepmania Themes'
 

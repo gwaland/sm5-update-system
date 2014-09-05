@@ -82,6 +82,8 @@ ln -s ~/sm5-update-system/update-client.sh ~/update.sh
 mkdir -p $_LOCAL_SONG_PATH
 mkdir -p $_LOCAL_SM_PATH/Themes
 mkdir -p $_LOCAL_SM_PATH/Save
+mkdir -p $_LOCAL_UPDATE_PATH
+mkdir -p $_LOCAL_BACKUP_PATH
 
 #echo "Doing all the sudo stuff needed in one chunk.  Put in your $(whoami) password here."
 echo -e "$PASSWORD\n" | sudo -S ln -sf /dev/null /etc/udev/rules.d/70-persistent-net.rules
