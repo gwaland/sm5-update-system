@@ -101,7 +101,7 @@ echo -e "$PASSWORD\n" | sudo -S sh -c 'echo exit 0 >> /etc/rc.local'
 
 #this will force tty1 to login as the primary user.
 echo -e "$PASSWORD\n" | sudo -S sed -i s/exec/#exec/g /etc/init/tty1.conf
-echo -e "$PASSWORD\n" | sudo -S sh -c "echo "exec /bin/login -f $_USER tty1 </dev/tty1 >/dev/tty1 2>&1" >> /etc/init/tty1.conf"
+echo -e "$PASSWORD\n" | sudo -S sh -c "echo \"exec /bin/login -f $_USER tty1 </dev/tty1 >/dev/tty1 2>&1\" >> /etc/init/tty1.conf"
 
 #make sure our user has access to the audio controls
 echo -e "$PASSWORD\n" | sudo -S usermod -a -G audio $_USER
@@ -141,7 +141,7 @@ echo "_REMOTE_PIUIO_PATH=$_REMOTE_PIUIO_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_UPDATE_PATH=$_LOCAL_UPDATE_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_SONG_PATH=$_LOCAL_SONG_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_SM_PATH=$_LOCAL_SM_PATH" >> $HOME/.sm5-client.rc
-
+echo "_LOCAL_BACKUP_PATH=$_LOCAL_BACKUP_PATH" >> $HOME/.sm5-client.rc
 
 
 $HOME/update.sh
