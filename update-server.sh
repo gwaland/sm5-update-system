@@ -137,17 +137,17 @@ build_sm ()
 	if [ $? -eq 0 ]; then
 		make install > make.install 2>&1 &
 		spinner $!
-	        cd "$SM_INSTALL_PATH/stepmania 5"
-        	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/Packages > /dev/null
-		mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec/ > /dev/null
-	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/
-        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/
-	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/
-        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec
+	        cd "$SM_INSTALL_PATH/stepmania-5"
+        	mkdir -p $SM_INSTALL_PATH/stepmania-5/Packages > /dev/null
+		mkdir -p $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/ > /dev/null
+	        mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/ > /dev/null
+        	mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavutil/ > /dev/null
+	        mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libswscale/ > /dev/null
+        	mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavcodec/ > /dev/null
+	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/
+        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavutil/
+	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libswscale/
+        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavcodec
 	        touch portable.ini
 		bundle_sm
 	else
@@ -158,9 +158,9 @@ build_sm ()
 #build the release package and md5sum and update -current symlinks
 bundle_sm ()
 {
-	if [ -f "$SM_INSTALL_PATH/stepmania 5/stepmania" ]; then
+	if [ -f "$SM_INSTALL_PATH/stepmania-5/stepmania" ]; then
 		_NOW=$(date +%Y%m%d%H%M)
-		cd "$SM_INSTALL_PATH/stepmania 5"
+		cd "$SM_INSTALL_PATH/stepmania-5"
 		touch build-$_NOW
 		log "Creating stepmania tar bundle."
 		tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
