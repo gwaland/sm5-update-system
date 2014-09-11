@@ -6,6 +6,7 @@ else
 	echo "configuration missing!" 
 	exit 1
 fi
+_CPUS=($(nproc) - 1)
 #verify settings import
 
 #log to console if verbose and to syslog if not. 
@@ -15,7 +16,7 @@ log()
 	if [ $VERBOSE = 1 ]; then
 		echo "$_MESSAGE"
 	fi
-#	logger $_MESSAGE
+	logger piu-updater: $_MESSAGE
 }
 
 #usage display.
@@ -131,7 +132,7 @@ build_sm ()
 	spinner $!
 	rm -rf $SM_INSTALL_PATH/stepmania\ 5
 	log "Making Stepmania!"
-	make > make.out 2>&1 &
+	make -j$_CPUS > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
 		make install > make.install 2>&1 &
@@ -157,16 +158,20 @@ build_sm ()
 #build the release package and md5sum and update -current symlinks
 bundle_sm ()
 {
-	_NOW=$(date +%Y%m%d%H%M)
-	cd "$SM_INSTALL_PATH/stepmania 5"
-	touch build-$_NOW
-	log "Creating stepmania tar bundle."
-	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
-	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
-	log "Creating stepmania md5sum"
-	md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
-	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
-	cleanup $SM_REPO_PATH
+	if [ -f "$SM_INSTALL_PATH/stepmania 5/stepmania" ]; then
+		_NOW=$(date +%Y%m%d%H%M)
+		cd "$SM_INSTALL_PATH/stepmania 5"
+		touch build-$_NOW
+		log "Creating stepmania tar bundle."
+		tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
+		ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
+		log "Creating stepmania md5sum"
+		md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
+		ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
+		cleanup $SM_REPO_PATH
+	else
+		log "stepmania failed to build."
+	fi
 
 }
 bundle_piu_theme ()
