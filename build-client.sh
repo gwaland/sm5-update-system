@@ -95,9 +95,9 @@ echo -e "$PASSWORD\n" | sudo -S sed -i s/#GRUB_GFXMODE=640x480/GRUB_GFXMODE=640x
 echo -e "$PASSWORD\n" | sudo -S update-grub
 
 #This is for legacy PIUIO drivers.
-echo -e "$PASSWORD\n" | sudo -S sed -i s/exi/#exi/g /etc/rc.local
-echo -e "$PASSWORD\n" | sudo -S sh -c 'echo chmod a+wrx /dev/piuio0 >> /etc/rc.local'
-echo -e "$PASSWORD\n" | sudo -S sh -c 'echo exit 0 >> /etc/rc.local'
+#echo -e "$PASSWORD\n" | sudo -S sed -i s/exi/#exi/g /etc/rc.local
+#echo -e "$PASSWORD\n" | sudo -S sh -c 'echo chmod a+wrx /dev/piuio0 >> /etc/rc.local'
+#echo -e "$PASSWORD\n" | sudo -S sh -c 'echo exit 0 >> /etc/rc.local'
 
 #this will force tty1 to login as the primary user.
 echo -e "$PASSWORD\n" | sudo -S sed -i s/exec/#exec/g /etc/init/tty1.conf
