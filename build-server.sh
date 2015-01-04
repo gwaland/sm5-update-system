@@ -5,7 +5,7 @@ _GIT_SM="https://github.com/stepmania/stepmania.git"
 _GIT_PIUIO="https://github.com/djpohly/piuio.git"
 _GIT_CONSENSUAL="https://github.com/kyzentun/consensual.git"
 #change this to master to use the new io. (at this time lights aren't supported.
-_PIUIO_BRANCH="legacy"
+_PIUIO_BRANCH="master"
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
