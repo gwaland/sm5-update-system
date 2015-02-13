@@ -135,6 +135,7 @@ build_sm ()
 	make -j$_CPUS > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
+#clean up.		rm -rf "$SM_INSTALL_PATH/stepmania-5"
 		make install > make.install 2>&1 &
 		spinner $!
 	        cd "$SM_INSTALL_PATH/stepmania-5"
@@ -172,7 +173,9 @@ bundle_sm ()
 	else
 		log "stepmania failed to build."
 	fi
-
+#clean up installation path. 
+	cd ~
+	rm -rf "$SM_INSTALL_PATH/stepmania-5"
 }
 bundle_piu_theme ()
 {
