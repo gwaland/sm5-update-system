@@ -73,6 +73,8 @@ do
 			;;
 	esac
 done
+#declare SM_VER 
+declare SM_VER="xx"
 
 #spinner class for long tasks 
 spinner()
@@ -135,20 +137,11 @@ build_sm ()
 	make -j$_CPUS > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
-#clean up.		rm -rf "$SM_INSTALL_PATH/stepmania-5"
 		make install > make.install 2>&1 &
 		spinner $!
-	        cd "$SM_INSTALL_PATH/stepmania-5"
-        	mkdir -p $SM_INSTALL_PATH/stepmania-5/Packages > /dev/null
-		mkdir -p $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavutil/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libswscale/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavcodec/ > /dev/null
-	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavformat/
-        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavutil/
-	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libswscale/
-        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania-5/bundle/ffmpeg/libavcodec
+		SM_VER=$(grep PACKAGE_VERSION= configure | awk -F\' '{print $(NF-1)}')
+	        cd "$SM_INSTALL_PATH/stepmania-$SM_VER"
+        	mkdir -p $SM_INSTALL_PATH/stepmania-$SM_VER/Packages > /dev/null
 	        touch portable.ini
 		bundle_sm
 	else
@@ -159,9 +152,9 @@ build_sm ()
 #build the release package and md5sum and update -current symlinks
 bundle_sm ()
 {
-	if [ -f "$SM_INSTALL_PATH/stepmania-5/stepmania" ]; then
+	if [ -f "$SM_INSTALL_PATH/stepmania-$SM_VER/stepmania" ]; then
 		_NOW=$(date +%Y%m%d%H%M)
-		cd "$SM_INSTALL_PATH/stepmania-5"
+		cd "$SM_INSTALL_PATH/stepmania-$SM_VER"
 		touch build-$_NOW
 		log "Creating stepmania tar bundle."
 		tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
@@ -175,7 +168,7 @@ bundle_sm ()
 	fi
 #clean up installation path. 
 	cd ~
-	rm -rf "$SM_INSTALL_PATH/stepmania-5"
+	rm -rf "$SM_INSTALL_PATH/stepmania-$SM_VER"
 }
 bundle_piu_theme ()
 {
