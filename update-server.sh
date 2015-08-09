@@ -6,6 +6,7 @@ else
 	echo "configuration missing!" 
 	exit 1
 fi
+_CPUS=($(nproc) - 1)
 #verify settings import
 
 #log to console if verbose and to syslog if not. 
@@ -15,7 +16,7 @@ log()
 	if [ $VERBOSE = 1 ]; then
 		echo "$_MESSAGE"
 	fi
-#	logger $_MESSAGE
+	logger piu-updater: $_MESSAGE
 }
 
 #usage display.
@@ -72,6 +73,8 @@ do
 			;;
 	esac
 done
+#declare SM_VER 
+declare SM_VER="xx"
 
 #spinner class for long tasks 
 spinner()
@@ -126,46 +129,46 @@ build_sm ()
 	make clean > /dev/null 2>&1 &
 	spinner $!
 	log "Configuring Stepmania"
-	./autogen.sh
+	./autogen.sh 
 	./configure   --with-static-png   --with-static-jpeg --with-static-zlib  --with-static-bzip  --with-static-vorbis --prefix=$SM_INSTALL_PATH > configure.out 2>&1 &
 	spinner $!
 	rm -rf $SM_INSTALL_PATH/stepmania\ 5
 	log "Making Stepmania!"
-	make > make.out 2>&1 &
+	make -j$_CPUS > make.out 2>&1 &
 	spinner $!
 	if [ $? -eq 0 ]; then
 		make install > make.install 2>&1 &
 		spinner $!
-	        cd "$SM_INSTALL_PATH/stepmania 5"
-        	mkdir -p $SM_INSTALL_PATH/stepmania\ 5/Packages > /dev/null
-		mkdir -p $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/ > /dev/null
-	        mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/ > /dev/null
-        	mkdir -p  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec/ > /dev/null
-	        cp $SM_PATH/bundle/ffmpeg/libavformat/libavformat.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavformat/
-        	cp $SM_PATH/bundle/ffmpeg/libavutil/libavutil.so.52  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavutil/
-	        cp $SM_PATH/bundle/ffmpeg/libswscale/libswscale.so.2  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libswscale/
-        	cp $SM_PATH/bundle/ffmpeg/libavcodec/libavcodec.so.55  $SM_INSTALL_PATH/stepmania\ 5/bundle/ffmpeg/libavcodec
+		SM_VER=$(grep PACKAGE_VERSION= configure | awk -F\' '{print $(NF-1)}')
+	        cd "$SM_INSTALL_PATH/stepmania-$SM_VER"
+        	mkdir -p $SM_INSTALL_PATH/stepmania-$SM_VER/Packages > /dev/null
 	        touch portable.ini
 		bundle_sm
+	else
+		log "error in make!"
 	fi
 }
 
 #build the release package and md5sum and update -current symlinks
 bundle_sm ()
 {
-	_NOW=$(date +%Y%m%d%H%M)
-	cd "$SM_INSTALL_PATH/stepmania 5"
-	touch build-$_NOW
-	log "Creating stepmania tar bundle."
-	tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
-	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
-	log "Creating stepmania md5sum"
-	md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
-	ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
-	cleanup $SM_REPO_PATH
-
+	if [ -f "$SM_INSTALL_PATH/stepmania-$SM_VER/stepmania" ]; then
+		_NOW=$(date +%Y%m%d%H%M)
+		cd "$SM_INSTALL_PATH/stepmania-$SM_VER"
+		touch build-$_NOW
+		log "Creating stepmania tar bundle."
+		tar -czf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz * 
+		ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz $SM_REPO_PATH/stepmania-build-current.tar.gz
+		log "Creating stepmania md5sum"
+		md5sum $SM_REPO_PATH/stepmania-build-$_NOW.tar.gz | awk '{ print $1 }' > $SM_REPO_PATH/stepmania-build-$_NOW.md5sum
+		ln -sf $SM_REPO_PATH/stepmania-build-$_NOW.md5sum $SM_REPO_PATH/stepmania-build-current.md5sum
+		cleanup $SM_REPO_PATH
+	else
+		log "stepmania failed to build."
+	fi
+#clean up installation path. 
+	cd ~
+	rm -rf "$SM_INSTALL_PATH/stepmania-$SM_VER"
 }
 bundle_piu_theme ()
 {
@@ -184,7 +187,7 @@ bundle_piu_theme ()
 #		log "Creating theme $THEME md5sum"
 #		md5sum $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.tar.gz | awk '{ print $1 }' > $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum
 #		ln -sf $THEME_REPO_PATH/piu-$THEME-theme-$_NOW.md5sum $THEME_REPO_PATH/piu-$THEME-theme-current.md5sum
-		zip -9 -r $THEME_REPO_PATH/$THEME.smzip Themes/$THEME 
+		zip -9 -r -q $THEME_REPO_PATH/$THEME.smzip Themes/$THEME 
 	done
 #	clean_themes $THEME_REPO_PATH
 

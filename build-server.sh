@@ -1,11 +1,11 @@
 #!/bin/bash
-_PACKAGES="mesa-common-dev mc libglu1-mesa-dev libxtst-dev  libxrandr-dev libpng12-dev  libjpeg8-dev zlib1g-dev  libbz2-dev libogg-dev  libvorbis-dev libc6-dev yasm  libasound-dev  libpulse-dev  libjack-dev libglew1.6-dev binutils-dev  libgtk2.0-dev  libmad0-dev automake  nvidia-173 xserver-xorg git gawk mesa-utils xinit alsa-base "
+_PACKAGES="zip mesa-common-dev mc libglu1-mesa-dev libxtst-dev  libxrandr-dev libpng12-dev  libjpeg8-dev zlib1g-dev  libbz2-dev libogg-dev  libvorbis-dev libc6-dev yasm  libasound-dev  libpulse-dev  libjack-dev libglew1.6-dev binutils-dev  libgtk2.0-dev  libmad0-dev automake  nvidia-173 xserver-xorg git gawk mesa-utils xinit alsa-base "
 _USER=$(whoami)
 _GIT_SM="https://github.com/stepmania/stepmania.git"
 _GIT_PIUIO="https://github.com/djpohly/piuio.git"
 _GIT_CONSENSUAL="https://github.com/kyzentun/consensual.git"
 #change this to master to use the new io. (at this time lights aren't supported.
-_PIUIO_BRANCH="legacy"
+_PIUIO_BRANCH="master"
 
 # Absolute path to this script. /home/user/bin/foo.sh
 SCRIPT=$(readlink -f $0)
