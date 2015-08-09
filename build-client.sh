@@ -142,6 +142,7 @@ echo "_LOCAL_UPDATE_PATH=$_LOCAL_UPDATE_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_SONG_PATH=$_LOCAL_SONG_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_SM_PATH=$_LOCAL_SM_PATH" >> $HOME/.sm5-client.rc
 echo "_LOCAL_BACKUP_PATH=$_LOCAL_BACKUP_PATH" >> $HOME/.sm5-client.rc
+echo "_LOCAL_SM_SHARE_PATH=$HOME/.stepmania-5.0" >> $HOME/.sm5-client.rc
 
 
 $HOME/update.sh

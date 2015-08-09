@@ -7,3 +7,4 @@ _LOCAL_UPDATE_PATH=/home/piu/new/
 _LOCAL_SONG_PATH=/home/piu/Songs/
 _LOCAL_BACKUP_PATH=/home/piu/backup/
 _LOCAL_SM_PATH=/home/piu/sm5/
+_LOCAL_SM_SHARE_PATH=/home/piu/.stepmania-5.0
