@@ -52,8 +52,8 @@ else
 	cp -rf $_LOCAL_BACKUP_PATH/sm5.$_NOW/Save/* $_LOCAL_SM_PATH/Save/
 	cp -rsf $_LOCAL_SONG_PATH/* $_LOCAL_SM_PATH/Songs/
 	cp $_LOCAL_UPDATE_PATH/sm5/stepmania-build-current.md5sum $_LOCAL_UPDATE_PATH/installed/stepmania-build-current.md5sum
-        ls -1 $_LOCAL_SM_PATH/Themes > $_LOCAL_SM_PATH/theme.exclude
-	rsync -avr --exclude-from $_LOCAL_SM_PATH/theme.exclude $_LOCAL_BACKUP_PATH/sm5.$_NOW/Themes/ $_LOCAL_SM_PATH/Themes/
+#        ls -1 $_LOCAL_SM_PATH/Themes > $_LOCAL_SM_PATH/theme.exclude
+#	rsync -avr --exclude-from $_LOCAL_SM_PATH/theme.exclude $_LOCAL_BACKUP_PATH/sm5.$_NOW/Themes/ $_LOCAL_SM_PATH/Themes/
 
 fi
 
